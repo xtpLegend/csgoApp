@@ -2,6 +2,7 @@ package com.example.daan.project;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -22,11 +23,22 @@ import java.util.ArrayList;
         private Exception exception;
 
 
+    public interface AsyncResponse {
+        void processFinish(int output);
+    }
+
+    public AsyncResponse delegate = null;
+
+    public SteamAPI(AsyncResponse delegate){
+        this.delegate = delegate;
+    }
+
 
     private String request;
         protected void onPreExecute() {
-            // progressBar.setVisibility(View.VISIBLE);
-            // responseView.setText("");
+
+            //progressBar.setVisibility(View.VISIBLE);
+           // responseView.setText("");
         }
 
         protected  String doInBackground(String... urls) {
@@ -38,6 +50,7 @@ import java.util.ArrayList;
           oauth_version=1.0
           */
             // Do some validation here
+
             try {
                 URL url = new URL(request);
                 HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -67,9 +80,6 @@ import java.util.ArrayList;
         protected void onPostExecute(String response) {
 
 
-
-
-
             try {
 
              //   JSONObject on=response.getJSONObject("data");
@@ -80,7 +90,8 @@ import java.util.ArrayList;
                 Log.w("TEST",JPlayerStats.toString());
                 JSONArray stats = JPlayerStats.getJSONArray("stats");
                 Log.w("TEST",Integer.toString(stats.getJSONObject(0).getInt("value")));
-                
+                int totalkill = stats.getJSONObject(0).getInt("value");
+
                // int totalkill = kils.getInt("total_kills");
                 //Log.w("TEST",Integer.toString(totalkill));
                // JSONArray jArray = jObject.getJSONArray("stats");
@@ -88,7 +99,7 @@ import java.util.ArrayList;
                 ///int kills = JStats.getInt("total_kills");
 
 
-
+                delegate.processFinish(totalkill);
 
             } catch (JSONException e) {
                 e.printStackTrace();
