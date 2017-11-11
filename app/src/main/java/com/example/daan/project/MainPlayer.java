@@ -77,4 +77,9 @@ public class MainPlayer extends Player {
     };
 
 
+    public MainPlayer(Map<String,String> friendlist,String playerName, String steamId, int totalTimePlayed, int totalKills, int totalWinsPistolRound, int totalShots, int totalHits, int totalDeaths, int totalBomPlants, int totalBomDefuses, int totalDamageDone, int totalMoneyEarned, int totalHeadshots, Map<String, Integer> weaponKills, Map<String, Integer> weaponAccuracy, Map<String, Integer> weaponShots, Map<String, Integer> weaponHits, Map<String, Integer> mapRounds, Map<String, Integer> mapWins, int lastMatchTwins, int lastMatchCTWins, int lastMatchWins, int lastMatchKils, int lastMatchDeaths, int lastMatchFavWeapon, int lastMatchFavWeaponShots, int lastMatchFavWeaponHits, int lastMatchFavWeaponKils, int lastMatchMVP, int lastMatchMoneySpent) {
+
+        super(playerName, steamId, totalTimePlayed, totalKills, totalWinsPistolRound, totalShots, totalHits, totalDeaths, totalBomPlants, totalBomDefuses, totalDamageDone, totalMoneyEarned, totalHeadshots, weaponKills, weaponAccuracy, weaponShots, weaponHits, mapRounds, mapWins, lastMatchTwins, lastMatchCTWins, lastMatchWins, lastMatchKils, lastMatchDeaths, lastMatchFavWeapon, lastMatchFavWeaponShots, lastMatchFavWeaponHits, lastMatchFavWeaponKils, lastMatchMVP, lastMatchMoneySpent);
+        this.friendlist=friendlist;
+    }
 }
