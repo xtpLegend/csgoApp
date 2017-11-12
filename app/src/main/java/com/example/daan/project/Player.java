@@ -1,6 +1,7 @@
 package com.example.daan.project;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.Collection;
 import java.util.Map;
@@ -21,9 +22,134 @@ public class Player {
     private int totalShots;
     private int totalHits;
     private int totalDeaths;
+    private Map<String,String> tempPlayerStats = new Map<String, String>() {
+        @Override
+        public int size() {
+            return 0;
+        }
 
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
 
+        @Override
+        public boolean containsKey(Object key) {
+            return false;
+        }
 
+        @Override
+        public boolean containsValue(Object value) {
+            return false;
+        }
+
+        @Override
+        public String get(Object key) {
+            return null;
+        }
+
+        @Override
+        public String put(String key, String value) {
+            return null;
+        }
+
+        @Override
+        public String remove(Object key) {
+            return null;
+        }
+
+        @Override
+        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @NonNull
+        @Override
+        public Set<String> keySet() {
+            return null;
+        }
+
+        @NonNull
+        @Override
+        public Collection<String> values() {
+            return null;
+        }
+
+        @NonNull
+        @Override
+        public Set<Entry<String, String>> entrySet() {
+            return null;
+        }
+    };
+    private Map<String,String>tempPlayerInfo=new Map<String, String>() {
+        @Override
+        public int size() {
+            return 0;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return false;
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return false;
+        }
+
+        @Override
+        public String get(Object key) {
+            return null;
+        }
+
+        @Override
+        public String put(String key, String value) {
+            return null;
+        }
+
+        @Override
+        public String remove(Object key) {
+            return null;
+        }
+
+        @Override
+        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @NonNull
+        @Override
+        public Set<String> keySet() {
+            return null;
+        }
+
+        @NonNull
+        @Override
+        public Collection<String> values() {
+            return null;
+        }
+
+        @NonNull
+        @Override
+        public Set<Entry<String, String>> entrySet() {
+            return null;
+        }
+    };
     private int totalBomPlants;
     private int totalBomDefuses;
     private int totalDamageDone;
@@ -417,17 +543,21 @@ public class Player {
     //lastMtachStats
     private int lastMatchTwins;
     private int lastMatchCTWins;
-    private int LastMatchWins;
+    private int lastMatchWins;
     private int lastMatchKils;
     private int lastMatchDeaths;
     private int lastMatchFavWeapon;
     private int lastMatchFavWeaponShots;
     private int lastMatchFavWeaponHits;
+
+
+
     private int lastMatchFavWeaponKils;
     private int lastMatchMVP;
     private int lastMatchMoneySpent;
 
-
+    public Player()
+    {}
 
     //Steam profile info
     //http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids=76561197960435530
@@ -445,10 +575,10 @@ public class Player {
     //http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218&relationship=friend
 
 
-    public Player(String playerName, String steamId, int totalTimePlayed, int totalKills, int totalWinsPistolRound, int totalShots, int totalHits, int totalDeaths, int totalBomPlants, int totalBomDefuses,
-                  int totalDamageDone, int totalMoneyEarned, int totalHeadshots, Map<String, Integer> weaponKills, Map<String, Integer> weaponAccuracy, Map<String, Integer> weaponShots,
-                  Map<String, Integer> weaponHits, Map<String, Integer> mapRounds, Map<String, Integer> mapWins, int lastMatchTwins, int lastMatchCTWins, int lastMatchWins, int lastMatchKils,
-                  int lastMatchDeaths, int lastMatchFavWeapon, int lastMatchFavWeaponShots, int lastMatchFavWeaponHits, int lastMatchFavWeaponKils, int lastMatchMVP, int lastMatchMoneySpent) {
+    public Player(String steamId)
+    {
+       Map<String,String> tempPlayerInfo = getAllPlayerInfoApi(steamId);
+       Map<String,String> tempPlayerStat = getAllPlayerStatsApi(steamId);
         this.playerName = playerName;
         SteamId = steamId;
         this.totalTimePlayed = totalTimePlayed;
@@ -470,7 +600,7 @@ public class Player {
         this.mapWins = mapWins;
         this.lastMatchTwins = lastMatchTwins;
         this.lastMatchCTWins = lastMatchCTWins;
-        LastMatchWins = lastMatchWins;
+        lastMatchWins = lastMatchWins;
         this.lastMatchKils = lastMatchKils;
         this.lastMatchDeaths = lastMatchDeaths;
         this.lastMatchFavWeapon = lastMatchFavWeapon;
@@ -479,6 +609,7 @@ public class Player {
         this.lastMatchFavWeaponKils = lastMatchFavWeaponKils;
         this.lastMatchMVP = lastMatchMVP;
         this.lastMatchMoneySpent = lastMatchMoneySpent;
+
     }
 
 
@@ -512,7 +643,7 @@ public class Player {
     }
 
     public int getLastMatchWins() {
-        return LastMatchWins;
+        return lastMatchWins;
     }
 
     public int getLastMatchKils() {
@@ -541,6 +672,9 @@ public class Player {
 
     public int getLastMatchMVP() {
         return lastMatchMVP;
+    }
+    public int getTotalKills() {
+        return totalKills;
     }
 
     public int getLastMatchMoneySpent() {
@@ -607,7 +741,7 @@ public class Player {
     }
 
     public void setLastMatchWins(int lastMatchWins) {
-        LastMatchWins = lastMatchWins;
+        lastMatchWins = lastMatchWins;
     }
 
     public void setLastMatchKils(int lastMatchKils) {
@@ -641,4 +775,51 @@ public class Player {
     public void setLastMatchMoneySpent(int lastMatchMoneySpent) {
         this.lastMatchMoneySpent = lastMatchMoneySpent;
     }
+
+
+    private Map<String,String> getAllPlayerStatsApi(String steamId)
+    {
+        SteamAPI getPlayerStatsAsync = (SteamAPI) new SteamAPI(new SteamAPI.AsyncResponse(){
+            MainPlayer mPlayer=new MainPlayer();
+
+            @Override
+            public void processFinish(Map output) {
+               tempPlayerStats = output;
+                // Mplayer.setTotalKills((Integer)output.get("total_kills"));
+
+                //Log.w("TEST", "calledFunction")
+                //Log.w("TEST", Integer.toString(output) );
+            }
+        }).execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid="+steamId,"getPlayerStats");
+
+        return tempPlayerStats;
+
+    }
+
+
+
+
+
+    private Map<String,String> getAllPlayerInfoApi(String steamId)
+    {
+        SteamAPI getPlayerInfoAsync = (SteamAPI) new SteamAPI(new SteamAPI.AsyncResponse(){
+            MainPlayer mPlayer=new MainPlayer();
+
+
+            @Override
+            public void processFinish(Map output) {
+                tempPlayerInfo = output;
+
+                // Mplayer.setTotalKills((Integer)output.get("total_kills"));
+                // Log.w("TEST", Integer.toString(Mplayer.getTotalKills()));
+                //Log.w("TEST", Integer.toString(output) );
+
+            }
+        }).execute("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids="+steamId,"getPlayerInfo");
+
+
+
+            return tempPlayerInfo;
+    }
+
 }
