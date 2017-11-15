@@ -10,7 +10,7 @@ import java.util.Set;
  * Created by daan on 11.11.17.
  */
 
-public class MainPlayer extends Player {
+public class MainPlayer extends Player{
     private Map<String,String> friendlist = new Map<String, String>() {
         @Override
         public int size() {

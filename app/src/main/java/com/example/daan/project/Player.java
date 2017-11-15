@@ -3,6 +3,8 @@ package com.example.daan.project;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.orm.SugarRecord;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -11,8 +13,8 @@ import java.util.Set;
  * Created by daan on 11.11.17.
  */
 
-public class Player {
-
+public class Player extends SugarRecord<Player>
+{
     //Global stats
     private String playerName;
     private  String SteamId;
