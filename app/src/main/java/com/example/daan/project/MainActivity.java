@@ -1,7 +1,10 @@
 package com.example.daan.project;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -35,6 +38,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        CheckFirstTime();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,13 +57,30 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        Log.w("TEST", "onCreate: ");
 
-          //  AsyncTask task = new SteamAPI().execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218");
+        //  AsyncTask task = new SteamAPI().execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218");
+        Intent intent = getIntent();
+        SharedPreferences pref;
+        pref = getSharedPreferences("preferences", this.MODE_PRIVATE);
 
+       if(pref.contains("steamid"))
+        {
+            Log.w("TEST", "Pref contains steamid");
+            String steamId = pref.getString("steamid","");
+            Player p1=new Player(steamId);
+        }
 
         //Log.w("TEST", Integer.toString(mPlayer.getTotalKills()));
         //C8E2FB316FEBD12C2CD17BB2B06CDE14
+
+
+    }
+
+    @Override
+    protected void onResume() {
+
+
+        super.onResume();
     }
 
 
@@ -95,6 +116,7 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -118,11 +140,29 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void SteamIdCommit(View v)
+
+
+    public void CheckFirstTime()
     {
-        EditText text =(EditText) findViewById(R.id.txtSteamId);
-        String steamId = text.getText().toString();
-        Player test = new Player(steamId);
-        
+        SharedPreferences dataSave;
+        dataSave = getSharedPreferences("preferences", this.MODE_PRIVATE);
+
+        if(dataSave.contains("firstTime")){ // first run is happened
+          //  Log.w("TEST", "Not FirtsRun");
+        }
+        else{ //  this is the first run of application
+            SharedPreferences.Editor editor = dataSave.edit();
+            editor.putString("firstTime", "yes");
+            editor.apply();
+            Log.w("TEST", "FirtsRun");
+            Intent intent = new Intent(this,StartScreen.class);
+            //intent.putExtra("Text",text.getText().toString());
+            startActivity(intent);
+        }
+
+
+
+        }
+
     }
-}
+

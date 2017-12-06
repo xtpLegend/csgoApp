@@ -26,7 +26,6 @@ public class MainPlayer extends Player{
         public boolean containsKey(Object key) {
             return false;
         }
-
         @Override
         public boolean containsValue(Object value) {
             return false;

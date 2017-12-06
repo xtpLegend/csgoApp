@@ -780,7 +780,10 @@ public class Player extends SugarRecord<Player>
         Map<String,String> tempPlayerStat = getAllPlayerStatsApi(steamId);
         Log.w("TEST","GotPlayerStatsApi");
         Map<String,String> tempPlayerFriends = getAllPlayerFriendsApi(steamId);
-      //  Log.w("TEST","GotPlayerFriends");
+     //   Log.w("TEST temp",tempPlayerFriends.get("1"));
+
+
+        //  Log.w("TEST","GotPlayerFriends");
         //friendList = tempPlayerFriends;
        /* this.playerName = playerName;
         SteamId = steamId;
@@ -996,7 +999,7 @@ public class Player extends SugarRecord<Player>
                 //Log.w("TEST", Integer.toString(output) );
                 Log.w("TEST","GetAllPlayerStats");
             }
-        }).execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218","getPlayerStats");
+        }).execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid="+steamId,"getPlayerStats");
 
         return tempPlayerStats;
 
@@ -1021,7 +1024,7 @@ public class Player extends SugarRecord<Player>
                 //Log.w("TEST", Integer.toString(output) );
                 Log.w("TEST", "InfoApi");
             }
-        }).execute("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids=76561198129798218","getPlayerInfo");
+        }).execute("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids="+steamId,"getPlayerInfo");
 
 
 
@@ -1030,6 +1033,7 @@ public class Player extends SugarRecord<Player>
 
     private Map<String,String> getAllPlayerFriendsApi(String steamId)
     {
+        Log.w("TEST", "getAllPlayersFriendsApi");
 
 
         SteamAPI getPlayerFriendsAsync = (SteamAPI) new SteamAPI(new SteamAPI.AsyncResponse(){
@@ -1043,9 +1047,9 @@ public class Player extends SugarRecord<Player>
                 //Log.w("TEST", Integer.toString(output) );
                 Log.w("TEST", "FriendsRequest");
             }
-        }).execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218&relationship=friend","getFriendsInfo");
+        }).execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid="+steamId+"&relationship=friend","getFriendsInfo");
+         return tempPlayerFriends;
 
-        return tempPlayerFriends;
     }
 
 }

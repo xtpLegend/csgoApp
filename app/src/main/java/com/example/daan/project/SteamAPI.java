@@ -41,8 +41,7 @@ import java.util.Set;
     private String request;
         protected void onPreExecute() {
 
-            //progressBar.setVisibility(View.VISIBLE);
-           // responseView.setText("");
+
         }
 
         protected  String doInBackground(String... urls) {
@@ -280,8 +279,8 @@ import java.util.Set;
 
     protected void ParseJSONFriendlist(JSONObject  jObject) throws JSONException {
         JSONObject JPlayerFriends = jObject.getJSONObject("friendslist");
-        //  Log.w("TEST","test");
-        Log.w("TEST",JPlayerFriends.toString());
+
+       // Log.w("TEST",JPlayerFriends.toString());
         JSONArray friends = JPlayerFriends.getJSONArray("friends");
         //Log.w("TEST",Integer.toString(stats.getJSONObject(0).getInt("value")));
         //Log.w("TEST",stats.getJSONObject(0).getString("name"));
@@ -351,9 +350,12 @@ import java.util.Set;
             }
         };
 
-        for (int i=0;i>friends.length();i++)
+        for (int i=0;i<friends.length();i++)
         {
+            Log.w("TEST","Parsing Jason");
+
             player.put(Integer.toString(i),friends.getJSONObject(i).getString("steamid"));
+            Log.w("TEST",Integer.toString(i)+ " " +friends.getJSONObject(i).getString("steamid") );
         }
         delegate.processFinish(player);
     }
