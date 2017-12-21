@@ -19,6 +19,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -27,8 +28,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener {
 
 
 
@@ -57,17 +57,31 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-        //  AsyncTask task = new SteamAPI().execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218");
+        // AsyncTask task = new SteamAPI().execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218");
         Intent intent = getIntent();
         SharedPreferences pref;
         pref = getSharedPreferences("preferences", this.MODE_PRIVATE);
 
-       if(pref.contains("steamid"))
+       //Map<String,String> test2= test.doInBackground("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=","getPlayerStats");
+
+
+
+
+
+
+
+
+
+
+        if(pref.contains("steamid"))
         {
-            Log.w("TEST", "Pref contains steamid");
+           // Log.w("TEST", "Pref contains steamid");
             String steamId = pref.getString("steamid","");
             Player p1=new Player(steamId);
+            ImageView profileImg = (ImageView) findViewById(R.id.ProfileImage);
+            TextView main = (TextView) findViewById(R.id.MainText);
+            main.setText(p1.getTotalKills());
+           // profileImg.setImageURI("");
         }
 
         //Log.w("TEST", Integer.toString(mPlayer.getTotalKills()));
@@ -154,7 +168,7 @@ public class MainActivity extends AppCompatActivity
             SharedPreferences.Editor editor = dataSave.edit();
             editor.putString("firstTime", "yes");
             editor.apply();
-            Log.w("TEST", "FirtsRun");
+           // Log.w("TEST", "FirtsRun");
             Intent intent = new Intent(this,StartScreen.class);
             //intent.putExtra("Text",text.getText().toString());
             startActivity(intent);
@@ -164,5 +178,6 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-    }
+
+}
 

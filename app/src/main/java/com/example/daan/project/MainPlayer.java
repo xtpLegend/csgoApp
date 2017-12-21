@@ -146,7 +146,7 @@ public class MainPlayer extends Player{
 
 
 
-    private Map<String,String> getAllPlayerFriendsApi(String steamId)
+ /*   private Map<String,String> getAllPlayerFriendsApi(String steamId)
     {
 
 
@@ -164,5 +164,7 @@ public class MainPlayer extends Player{
         }).execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid="+steamId);
 
         return tempPlayerFriends;
-    }
+    }*/
 }
+
+
