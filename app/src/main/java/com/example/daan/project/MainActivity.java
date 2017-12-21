@@ -1,5 +1,6 @@
 package com.example.daan.project;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -25,15 +26,17 @@ import android.widget.TextView;
 import org.json.JSONArray;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity  implements NavigationView.OnNavigationItemSelectedListener, AsyncResponse {
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -48,6 +51,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
                         .setAction("Action", null).show();
             }
         });
+
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -75,12 +79,22 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
         if(pref.contains("steamid"))
         {
-           // Log.w("TEST", "Pref contains steamid");
             String steamId = pref.getString("steamid","");
-            Player p1=new Player(steamId);
+            SteamAPI test = new SteamAPI(MainActivity.this);
+
+
+            test.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats");
+
+
+
+
+            // Log.w("TEST", "Pref contains steamid");
+
+            Player p1=new Player("76561198129798218");
+            //Log.w("TEST", "PlayerCreated");
             ImageView profileImg = (ImageView) findViewById(R.id.ProfileImage);
             TextView main = (TextView) findViewById(R.id.MainText);
-            main.setText(p1.getTotalKills());
+            main.setText(Integer.toString(p1.getTotalKills()));
            // profileImg.setImageURI("");
         }
 
@@ -179,5 +193,9 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         }
 
 
+    @Override
+    public void onTaskCompleted(HashMap<String, String> response) {
+
+    }
 }
 

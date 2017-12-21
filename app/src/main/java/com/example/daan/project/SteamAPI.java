@@ -17,6 +17,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,13 +25,16 @@ import java.util.Set;
  * Created by daan on 11.11.17.
  */
 
-public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
+public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
+    private AsyncResponse taskCompleted;
 
 
    /* public interface AsyncResponse {
         void processFinish(Map<String,String> output);
     }*/
-
+   public SteamAPI(AsyncResponse activityContext){
+       this.taskCompleted = activityContext;
+   }
 
    // public AsyncResponse delegate = null;
 
@@ -128,7 +132,7 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
 
     }
 
-    protected Map<String,String> doInBackground(String... urls) {
+    protected HashMap<String,String> doInBackground(String... urls) {
         String request = urls[0];
 
         //String email = emailText.getText().toString();
@@ -138,6 +142,7 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
           oauth_version=1.0
           */
         // Do some validation here
+        HashMap<String,String> output=new HashMap<>();
 
         try {
             URL url = new URL(request);
@@ -146,70 +151,7 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
             //alleen als het een beveiligde api is
             //urlConnection.setRequestProperty("", API_KEY);
             //Get of Post
-            Map<String,String> output=new Map<String, String>() {
-                @Override
-                public int size() {
-                    return 0;
-                }
 
-                @Override
-                public boolean isEmpty() {
-                    return false;
-                }
-
-                @Override
-                public boolean containsKey(Object key) {
-                    return false;
-                }
-
-                @Override
-                public boolean containsValue(Object value) {
-                    return false;
-                }
-
-                @Override
-                public String get(Object key) {
-                    return null;
-                }
-
-                @Override
-                public String put(String key, String value) {
-                    return null;
-                }
-
-                @Override
-                public String remove(Object key) {
-                    return null;
-                }
-
-                @Override
-                public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-                }
-
-                @Override
-                public void clear() {
-
-                }
-
-                @NonNull
-                @Override
-                public Set<String> keySet() {
-                    return null;
-                }
-
-                @NonNull
-                @Override
-                public Collection<String> values() {
-                    return null;
-                }
-
-                @NonNull
-                @Override
-                public Set<Entry<String, String>> entrySet() {
-                    return null;
-                }
-            };
             urlConnection.setRequestMethod("GET");
             try {
 
@@ -238,25 +180,31 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
             } finally {
                 //Log.w("TEST","DoInBg");
                 urlConnection.disconnect();
-                Log.w("TEST", "Return parsed stats");
-                return output;
+
+
             }
         } catch (Exception e) {
             Log.e("ERROR", e.getMessage(), e);
             Log.w("TEST", "Error returning stats");
             return null;
         }
+        Log.w("TEST", output.get("total_kills") );
+        return output;
     }
     @Override
-    protected void onPostExecute(Map<String,String> result) {
+    protected void onPostExecute(HashMap<String,String> result) {
         Log.w("TEST", "onPostExecute: " );
+        Log.w("TEST", result.get("total_kills") );
+
+
+        taskCompleted.onTaskCompleted(result);
 
 
         //delegate.processFinish(result);
     }
 
 
-    protected  Map<String,String> ParseJSONPlayerInfo(JSONObject jObject) throws JSONException {
+    protected  HashMap<String,String> ParseJSONPlayerInfo(JSONObject jObject) throws JSONException {
         JSONObject JPlayerInfo = jObject.getJSONObject("response");
 
         Log.w("TEST", JPlayerInfo.toString());
@@ -265,70 +213,7 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
         Log.w("TEST", stat.toString());
         // Log.w("TEST",Integer.toString(stats.getJSONObject(0).getInt("value")));
         // Log.w("TEST",stats.getJSONObject(0).getString("name"));
-        Map<String, String> player = new Map<String, String>() {
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean containsKey(Object key) {
-                return false;
-            }
-
-            @Override
-            public boolean containsValue(Object value) {
-                return false;
-            }
-
-            @Override
-            public String get(Object key) {
-                return null;
-            }
-
-            @Override
-            public String put(String key, String value) {
-                return null;
-            }
-
-            @Override
-            public String remove(Object key) {
-                return null;
-            }
-
-            @Override
-            public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @NonNull
-            @Override
-            public Set<String> keySet() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Collection<String> values() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Set<Entry<String, String>> entrySet() {
-                return null;
-            }
-        };
+        HashMap<String, String> player = new HashMap<>();
         for (int i = 0; i < userinfoJSON.length; i++) {
             player.put(userinfoJSON[i], stat.getString(userinfoJSON[i]));
 
@@ -338,7 +223,7 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
 
     }
 
-    protected  Map<String,String> ParseJSONPlayerStats(JSONObject jObject) throws JSONException {
+    protected  HashMap<String,String> ParseJSONPlayerStats(JSONObject jObject) throws JSONException {
         JSONObject JPlayerStats = jObject.getJSONObject("playerstats");
         // Log.w("TEST","test");
         //   Log.w("TEST",JPlayerStats.toString());
@@ -347,87 +232,27 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
         //Log.w("TEST",Integer.toString(stats.getJSONObject(0).getInt("value")));
         //Log.w("TEST",stats.getJSONObject(0).getString("name"));
 
-        Map<String, String> player = new Map<String, String>() {
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean containsKey(Object key) {
-                return false;
-            }
-
-            @Override
-            public boolean containsValue(Object value) {
-                return false;
-            }
-
-            @Override
-            public String get(Object key) {
-                return null;
-            }
-
-            @Override
-            public String put(String key, String value) {
-                return null;
-            }
-
-            @Override
-            public String remove(Object key) {
-                return null;
-            }
-
-            @Override
-            public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @NonNull
-            @Override
-            public Set<String> keySet() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Collection<String> values() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Set<Entry<String, String>> entrySet() {
-                return null;
-            }
-        };
+        HashMap<String,String> player = new HashMap<>();
         Log.w("TEST", "PlayerStats parsed");
        // Log.w("TEST", player.keySet().toArray()[0].toString());
 
         for (int i = 0; i < stats.length(); i++) {
 
             //Log.w("TEST", stats.getJSONObject(i).getString("name"));
-           player.put(stats.getJSONObject(i).getString("name"), stats.getJSONObject(i).getString("value"));
-            //Log.w("TEST", "Inside Json Parse Function" + " "+ stats.getJSONObject(i).getString("name")+ " " + stats.getJSONObject(i).getString("value"));
+          player.put(stats.getJSONObject(i).getString("name").trim(), stats.getJSONObject(i).getString("value").trim());
+
+           // Log.w("TEST", "Inside Json Parse Function" + " "+ stats.getJSONObject(i).getString("name")+ " " + stats.getJSONObject(i).getString("value"));
             //Log.w("TEST",Integer.toString(i)+ " " +stats.getJSONObject(i).getString("steamid") );
 
         }
        // PlayerStat = player;
+      //  Log.w("TEST", "killssss : "+player.get("total_kills") );
+        Log.w("TEST", player.get("total_kills"));
         return player;
 
     }
 
-    protected  Map<String,String> ParseJSONFriendlist(JSONObject jObject) throws JSONException {
+    protected  HashMap<String,String> ParseJSONFriendlist(JSONObject jObject) throws JSONException {
         JSONObject JPlayerFriends = jObject.getJSONObject("friendslist");
 
         // Log.w("TEST",JPlayerFriends.toString());
@@ -435,70 +260,7 @@ public class SteamAPI extends AsyncTask<String, Void, Map<String,String>> {
         //Log.w("TEST",Integer.toString(stats.getJSONObject(0).getInt("value")));
         //Log.w("TEST",stats.getJSONObject(0).getString("name"));
 
-        Map<String, String> player = new Map<String, String>() {
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean containsKey(Object key) {
-                return false;
-            }
-
-            @Override
-            public boolean containsValue(Object value) {
-                return false;
-            }
-
-            @Override
-            public String get(Object key) {
-                return null;
-            }
-
-            @Override
-            public String put(String key, String value) {
-                return null;
-            }
-
-            @Override
-            public String remove(Object key) {
-                return null;
-            }
-
-            @Override
-            public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @NonNull
-            @Override
-            public Set<String> keySet() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Collection<String> values() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Set<Entry<String, String>> entrySet() {
-                return null;
-            }
-        };
+        HashMap<String, String> player = new HashMap<>();
 
         for (int i = 0; i < friends.length(); i++) {
             //  Log.w("TEST","Parsing Jason");

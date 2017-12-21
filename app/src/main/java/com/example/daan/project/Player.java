@@ -7,6 +7,7 @@ import android.util.Log;
 import com.orm.SugarRecord;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  * Created by daan on 11.11.17.
  */
 
-public class Player extends SugarRecord<Player> {
+public class Player extends SugarRecord<Player> implements AsyncResponse {
     //Global stats
     private String playerName;
     private String SteamId;
@@ -25,7 +26,7 @@ public class Player extends SugarRecord<Player> {
     private int totalShots;
     private int totalHits;
     private int totalDeaths;
-    Map<String, String> TempStats = null;
+    HashMap<String, String> TempStats = new HashMap<>();
 
 
  /*   private Map<String, String> getAllPlayerStatsApi(String steamId) {
@@ -823,10 +824,6 @@ public class Player extends SugarRecord<Player> {
         Log.w("TEST", "1234");
         return tempPlayerInfo;
     }*/
-    private void getStats(Map<String, String> test) {
-        tempPlayerStats = test;
-        Log.w("TEST", test.keySet().toString());
-    }
 
 
   /*  private Map<String, String> getAllPlayerFriendsApi(String steamId) {
@@ -847,26 +844,8 @@ public class Player extends SugarRecord<Player> {
         return tempPlayerFriends;
 
     }*/
-
-    public Player(String steamId) {
-        Log.w("TEST", "Start Creating Player");
-
-        Log.w("TEST", "Start Request");
-
-        SteamAPI test = new SteamAPI();
-
-        try {
-            test.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats").get();
-        } catch (InterruptedException e) {
-            Log.w("TEST", "ERROR1");
-
-        } catch (ExecutionException e) {
-            Log.w("TEST", "ERROR2");
-
-
-        }
-
-        Log.w("TEST", "PlayerInfo");
+    private void Player()
+    {
         // Log.w("TEST", tempPlayerStat.keySet().toString());
         //Map<String, String> tempPlayerInfo = getAllPlayerInfoApi(steamId);
 
@@ -905,6 +884,21 @@ public class Player extends SugarRecord<Player> {
         this.lastMatchFavWeaponHits = lastMatchFavWeaponHits;
         this.lastMatchFavWeaponKils = lastMatchFavWeaponKils;
         this.lastMatchMVP = lastMatchMVP;*/
+    }
+    public Player(String steamId) {
+        Log.w("TEST", "Start Creating Player");
+
+        Log.w("TEST", "Start Request");
+
+        SteamAPI test = new SteamAPI(this);
+
+
+            test.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats");
+
+
+        Log.w("TEST", "Done constructor" );
+
+
     }
 
 
@@ -1074,4 +1068,17 @@ public class Player extends SugarRecord<Player> {
     }
 
 
+    @Override
+    public void onTaskCompleted(HashMap<String, String> response) {
+
+        if (response.get("total_kills") != null) {
+            Log.w("TEST", "PlayerGameStats");
+            TempStats = response;
+            Player();
+            Log.w("TEST", Integer.toString(getTotalKills() ));
+
+        } else if (true) {
+
+        }
+    }
 }
