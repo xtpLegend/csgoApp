@@ -1,5 +1,7 @@
 package com.example.daan.project;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v4.util.LogWriter;
 import android.util.Log;
@@ -12,12 +14,26 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
+import static android.support.v4.content.ContextCompat.startActivity;
+
 /**
  * Created by daan on 11.11.17.
  */
 
-public class Player extends SugarRecord<Player> implements AsyncResponse {
+public class Player extends SugarRecord<Player>implements AsyncResponse  {
+    private static RequestFinished requestFinished;
+
+    public static String MainPlayerSteamId;
+    private HashMap<String,HashMap<String,String>>friendStats = new HashMap<>();
+    private HashMap<String,HashMap<String,String>>friendInfo = new HashMap<>();
+    private HashMap<String, String> friendList = new HashMap<>();
     //Global stats
+    private SteamAPI API = new SteamAPI(this);
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
     private String playerName;
     private String SteamId;
     private int totalTimePlayed;
@@ -26,7 +42,7 @@ public class Player extends SugarRecord<Player> implements AsyncResponse {
     private int totalShots;
     private int totalHits;
     private int totalDeaths;
-    HashMap<String, String> TempStats = new HashMap<>();
+   static HashMap<String, String> TempStats = new HashMap<>();
 
 
  /*   private Map<String, String> getAllPlayerStatsApi(String steamId) {
@@ -49,134 +65,8 @@ public class Player extends SugarRecord<Player> implements AsyncResponse {
 
 
     private String profilePicture;
-    private Map<String, String> tempPlayerStats = new Map<String, String>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public String get(Object key) {
-            return null;
-        }
-
-        @Override
-        public String put(String key, String value) {
-            return null;
-        }
-
-        @Override
-        public String remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<String> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return null;
-        }
-    };
-    private Map<String, String> tempPlayerInfo = new Map<String, String>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public String get(Object key) {
-            return null;
-        }
-
-        @Override
-        public String put(String key, String value) {
-            return null;
-        }
-
-        @Override
-        public String remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<String> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return null;
-        }
-    };
+    private static HashMap<String, String> tempPlayerStats = new HashMap<>();
+    private static HashMap<String, String> tempPlayerInfo = new HashMap<>();
     private int totalBomPlants;
     private int totalBomDefuses;
     private int totalDamageDone;
@@ -191,457 +81,15 @@ public class Player extends SugarRecord<Player> implements AsyncResponse {
         this.profilePicture = profilePicture;
     }
 
-    private Map<String, String> friendList = new Map<String, String>() {
-        @Override
-        public int size() {
-            return 0;
-        }
 
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public String get(Object key) {
-            return null;
-        }
-
-        @Override
-        public String put(String key, String value) {
-            return null;
-        }
-
-        @Override
-        public String remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<String> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return null;
-        }
-    };
     //WeaponStats
-    private Map<String, Integer> weaponKills = new Map<String, Integer>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Integer get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Integer put(String key, Integer value) {
-            return null;
-        }
-
-        @Override
-        public Integer remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends Integer> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<Integer> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, Integer>> entrySet() {
-            return null;
-        }
-    };
-
-    private Map<String, Integer> weaponAccuracy = new Map<String, Integer>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Integer get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Integer put(String key, Integer value) {
-            return null;
-        }
-
-        @Override
-        public Integer remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends Integer> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<Integer> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, Integer>> entrySet() {
-            return null;
-        }
-
-    };
-    private Map<String, Integer> weaponShots = new Map<String, Integer>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Integer get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Integer put(String key, Integer value) {
-            return null;
-        }
-
-        @Override
-        public Integer remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends Integer> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<Integer> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, Integer>> entrySet() {
-            return null;
-        }
-    };
-    private Map<String, Integer> weaponHits = new Map<String, Integer>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Integer get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Integer put(String key, Integer value) {
-            return null;
-        }
-
-        @Override
-        public Integer remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends Integer> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<Integer> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, Integer>> entrySet() {
-            return null;
-        }
-    };
-    private Map<String, Integer> mapRounds = new Map<String, Integer>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Integer get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Integer put(String key, Integer value) {
-            return null;
-        }
-
-        @Override
-        public Integer remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends Integer> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<Integer> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, Integer>> entrySet() {
-            return null;
-        }
-    };
-    private Map<String, Integer> mapWins = new Map<String, Integer>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public Integer get(Object key) {
-            return null;
-        }
-
-        @Override
-        public Integer put(String key, Integer value) {
-            return null;
-        }
-
-        @Override
-        public Integer remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends Integer> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<Integer> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, Integer>> entrySet() {
-            return null;
-        }
-    };
+    private HashMap<String, Integer> weaponKills = new HashMap<>();
+
+    private HashMap<String, Integer> weaponAccuracy = new HashMap<>();
+    private HashMap<String, Integer> weaponShots = new HashMap<>();
+    private HashMap<String, Integer> weaponHits = new HashMap<>();
+    private HashMap<String, Integer> mapRounds = new HashMap<>();
+    private HashMap<String, Integer> mapWins = new HashMap<>();
     //lastMtachStats
     private int lastMatchTwins;
     private int lastMatchCTWins;
@@ -656,141 +104,10 @@ public class Player extends SugarRecord<Player> implements AsyncResponse {
     private int lastMatchMoneySpent;
 
 
-    private Map<String, String> friendlist = new Map<String, String>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public String get(Object key) {
-            return null;
-        }
-
-        @Override
-        public String put(String key, String value) {
-            return null;
-        }
-
-        @Override
-        public String remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<String> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return null;
-        }
-    };
-    Map<String, String> tempPlayerFriends = new Map<String, String>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public String get(Object key) {
-            return null;
-        }
-
-        @Override
-        public String put(String key, String value) {
-            return null;
-        }
-
-        @Override
-        public String remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<String> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return null;
-        }
-    };
+    private static HashMap<String, String> friendlist = new HashMap<>();
 
 
-    public Player() {
 
-        // Log.w("TEST","CreatedPlayer");
-
-    }
 
     //Steam profile info
     //http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids=76561197960435530
@@ -844,63 +161,89 @@ public class Player extends SugarRecord<Player> implements AsyncResponse {
         return tempPlayerFriends;
 
     }*/
-    private void Player()
+    public  void getStats(String steamId)
     {
-        // Log.w("TEST", tempPlayerStat.keySet().toString());
-        //Map<String, String> tempPlayerInfo = getAllPlayerInfoApi(steamId);
-
-        //    Map<String,String> tempPlayerFriends = getAllPlayerFriendsApi(steamId);
-        // this.totalKills=tempPlayerStat.get()
+        API.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats");
 
 
-        //  Log.w("TEST","GotPlayerFriends");
-        //friendList = tempPlayerFriends;
-        //   this.playerName = playerName;
-        // SteamId = steamId;
-        //  this.totalTimePlayed = totalTimePlayed;
-        this.totalKills = Integer.parseInt(TempStats.get("total_kills"));
-        this.totalWinsPistolRound = Integer.parseInt(TempStats.get("total_wins_pistolround"));
-        this.totalShots = Integer.parseInt(TempStats.get("total_shots_fired"));
-        this.totalHits = Integer.parseInt(TempStats.get("total_shots_hit"));
-        this.totalDeaths = Integer.parseInt(TempStats.get("total_deaths"));
-        this.totalBomPlants = Integer.parseInt(TempStats.get("total_planted_bombs"));
-        this.totalBomDefuses = Integer.parseInt(TempStats.get("total_defused_bombs"));
-        this.totalDamageDone = Integer.parseInt(TempStats.get("total_damage_done"));
-        this.totalMoneyEarned = Integer.parseInt(TempStats.get("total_money_earned"));
-        this.totalHeadshots = Integer.parseInt(TempStats.get("total_kills_headshot"));
-        //  this.weaponKills = weaponKills;
-        /*this.weaponAccuracy = weaponAccuracy;
+    }
+    public  void getFriends(String steamId)
+    {
+        API.execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid="+ steamId +"&relationship=friend" , "getPlayerFriends");
+
+    }
+    public  void getPlayerInfo(String steamId)
+    {
+        API.execute("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids=" + steamId, "getPlayerInfo");
+    }
+
+    public void init(String steamId,int level)
+    {
+        MainPlayerSteamId = steamId;
+        switch (level)
+        {
+            case 1 :getStats(steamId);
+            break;
+            case 2:getPlayerInfo(steamId);
+            break;
+            case 3:getFriends(steamId);
+            break;
+
+        }
+
+
+       // getFriends(steamId);
+       /* for (int i=0;i<friendList.size();i++)
+        {
+            getFriendStats(friendList.get(i).toString(),0);
+        }*/
+    }
+
+    public Player(String steamId,RequestFinished activityContext) {
+        Log.w("TEST", "Start Creating Player");
+        requestFinished=activityContext;
+       init(steamId,1);
+
+
+    }
+
+    public Player() {
+        //this.friendStats = friendStats;
+        //this.friendInfo = friendInfo;
+       // this.friendList = ;
+
+        this.playerName = tempPlayerInfo.get("personaname");
+        SteamId = tempPlayerInfo.get("steamid");
+        this.totalTimePlayed =Integer.parseInt(tempPlayerStats.get("total_time_played"));
+        this.totalKills = Integer.parseInt(tempPlayerStats.get("total_kills"));
+        this.totalWinsPistolRound = totalWinsPistolRound;
+        this.totalShots = totalShots;
+        this.totalHits = totalHits;
+        this.totalDeaths = totalDeaths;
+        this.profilePicture = profilePicture;
+        this.totalBomPlants = totalBomPlants;
+        this.totalBomDefuses = totalBomDefuses;
+        this.totalDamageDone = totalDamageDone;
+        this.totalMoneyEarned = totalMoneyEarned;
+        this.totalHeadshots = totalHeadshots;
+        this.weaponKills = weaponKills;
+        this.weaponAccuracy = weaponAccuracy;
         this.weaponShots = weaponShots;
         this.weaponHits = weaponHits;
         this.mapRounds = mapRounds;
         this.mapWins = mapWins;
         this.lastMatchTwins = lastMatchTwins;
         this.lastMatchCTWins = lastMatchCTWins;
-        lastMatchWins = lastMatchWins;
+        this.lastMatchWins = lastMatchWins;
         this.lastMatchKils = lastMatchKils;
         this.lastMatchDeaths = lastMatchDeaths;
         this.lastMatchFavWeapon = lastMatchFavWeapon;
         this.lastMatchFavWeaponShots = lastMatchFavWeaponShots;
         this.lastMatchFavWeaponHits = lastMatchFavWeaponHits;
         this.lastMatchFavWeaponKils = lastMatchFavWeaponKils;
-        this.lastMatchMVP = lastMatchMVP;*/
+        this.lastMatchMVP = lastMatchMVP;
+        this.lastMatchMoneySpent = lastMatchMoneySpent;
     }
-    public Player(String steamId) {
-        Log.w("TEST", "Start Creating Player");
-
-        Log.w("TEST", "Start Request");
-
-        SteamAPI test = new SteamAPI(this);
-
-
-            test.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats");
-
-
-        Log.w("TEST", "Done constructor" );
-
-
-    }
-
 
     //"http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218"
     public int getTotalBomPlants() {
@@ -1066,19 +409,46 @@ public class Player extends SugarRecord<Player> implements AsyncResponse {
     public void setLastMatchMoneySpent(int lastMatchMoneySpent) {
         this.lastMatchMoneySpent = lastMatchMoneySpent;
     }
+    public Player(int i)
+    {
+
+    }
 
 
     @Override
     public void onTaskCompleted(HashMap<String, String> response) {
+        Player temp=new Player(1);
 
-        if (response.get("total_kills") != null) {
-            Log.w("TEST", "PlayerGameStats");
-            TempStats = response;
-            Player();
-            Log.w("TEST", Integer.toString(getTotalKills() ));
 
-        } else if (true) {
+        if (response.get("Type")=="PlayerStats") {
+            Log.w("TEST", "OnTaskCompletedPlayer");
+            tempPlayerStats = response;
+            //Player();
+            tempPlayerStats.get("total_kills");
+
+            temp.init(MainPlayerSteamId,2);
+
+
+
+        } else if (response.get("Type")=="Friendlist") {
+            friendList=response;
+            requestFinished.onTaskCompleted();
 
         }
+        else if(response.get("Type")=="PlayerInfo")
+        {
+
+            tempPlayerInfo=response;
+            temp.init(MainPlayerSteamId,3);
+
+
+        }
+     //   Intent intent = new Intent(this,
+       // startActivity(intent);
+        //Hier moet ik de naar de splash page sturen dat alles geladen is
+
     }
+
+
+
 }

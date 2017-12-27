@@ -21,7 +21,7 @@ public class StartScreen extends AppCompatActivity {
     {
         EditText steamIdtext=(EditText)findViewById(R.id.SteamIDText);
         String steamId = steamIdtext.getText().toString();
-       Intent intent = new Intent(this,MainActivity.class);
+       Intent intent = new Intent(this,SplashActivity.class);
         //intent.putExtra("SteamId",steamId.getText().toString());
         //steamId.getText();
 

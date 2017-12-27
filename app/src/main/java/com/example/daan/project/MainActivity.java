@@ -36,12 +36,11 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        CheckFirstTime();
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -63,40 +62,37 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
         navigationView.setNavigationItemSelectedListener(this);
         // AsyncTask task = new SteamAPI().execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218");
         Intent intent = getIntent();
-        SharedPreferences pref;
-        pref = getSharedPreferences("preferences", this.MODE_PRIVATE);
+
 
        //Map<String,String> test2= test.doInBackground("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=","getPlayerStats");
 
+        Player MainPlayer = new Player();
+
+        TextView t;
+        t=(TextView) findViewById(R.id.MainText);
+       t.setText(Integer.toString(MainPlayer.getTotalKills()));
+        TextView a;
+        a=(TextView) findViewById(R.id.SecondeText);
+        a.setText(MainPlayer.getPlayerName());
+        TextView z;
+        z=(TextView) findViewById(R.id.SecondeText);
+        //z.setText(MainPlayer.);
 
 
 
 
-
-
-
-
-
-        if(pref.contains("steamid"))
+        Intent doneIntent = getIntent();
+        Bundle doneBundle = doneIntent.getExtras();
+        if (doneBundle!= null)
         {
-            String steamId = pref.getString("steamid","");
-            SteamAPI test = new SteamAPI(MainActivity.this);
+            String data = getIntent().getExtras().get("DoneLoading").toString();
 
-
-            test.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats");
-
-
-
-
-            // Log.w("TEST", "Pref contains steamid");
-
-            Player p1=new Player("76561198129798218");
-            //Log.w("TEST", "PlayerCreated");
-            ImageView profileImg = (ImageView) findViewById(R.id.ProfileImage);
-            TextView main = (TextView) findViewById(R.id.MainText);
-            main.setText(Integer.toString(p1.getTotalKills()));
-           // profileImg.setImageURI("");
         }
+
+
+
+
+
 
         //Log.w("TEST", Integer.toString(mPlayer.getTotalKills()));
         //C8E2FB316FEBD12C2CD17BB2B06CDE14
@@ -170,28 +166,15 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
 
 
-    public void CheckFirstTime()
-    {
-        SharedPreferences dataSave;
-        dataSave = getSharedPreferences("preferences", this.MODE_PRIVATE);
 
-        if(dataSave.contains("firstTime")){ // first run is happened
-          //  Log.w("TEST", "Not FirtsRun");
-        }
-        else{ //  this is the first run of application
-            SharedPreferences.Editor editor = dataSave.edit();
-            editor.putString("firstTime", "yes");
-            editor.apply();
-           // Log.w("TEST", "FirtsRun");
-            Intent intent = new Intent(this,StartScreen.class);
+
+
+        public void load()
+        {
+            Intent intent = new Intent(this,SplashActivity.class);
             //intent.putExtra("Text",text.getText().toString());
             startActivity(intent);
         }
-
-
-
-        }
-
 
     @Override
     public void onTaskCompleted(HashMap<String, String> response) {

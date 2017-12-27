@@ -43,74 +43,11 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
     }*/
 
 
-    public static Map<String, String> PlayerInfoGlob = new Map<String, String>() {
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return false;
-        }
-
-        @Override
-        public boolean containsKey(Object key) {
-            return false;
-        }
-
-        @Override
-        public boolean containsValue(Object value) {
-            return false;
-        }
-
-        @Override
-        public String get(Object key) {
-            return null;
-        }
-
-        @Override
-        public String put(String key, String value) {
-            return null;
-        }
-
-        @Override
-        public String remove(Object key) {
-            return null;
-        }
-
-        @Override
-        public void putAll(@NonNull Map<? extends String, ? extends String> m) {
-
-        }
-
-        @Override
-        public void clear() {
-
-        }
-
-        @NonNull
-        @Override
-        public Set<String> keySet() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Collection<String> values() {
-            return null;
-        }
-
-        @NonNull
-        @Override
-        public Set<Entry<String, String>> entrySet() {
-            return null;
-        }
-    };
+    public static HashMap<String, String> PlayerInfoGlob = new HashMap<>();
 
     private Exception exception;
-    static Map<String, String> PlayerStat;
-    static Map<String, String> PlayerInfo;
+    static HashMap<String, String> PlayerStat;
+    static HashMap<String, String> PlayerInfo;
     private String[] userinfoJSON = {"steamid", "communityvisibilitystate", "profilestate", "personaname",
             "lastlogoff", "commentpermission", "profileurl", "avatar", "avatarmedium", "avatarfull", "personastate",
             "realname", "primaryclanid", "timecreated", "personastateflags", "loccountrycode", "locstatecode", "loccityid"
@@ -142,7 +79,7 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
           oauth_version=1.0
           */
         // Do some validation here
-        HashMap<String,String> output=new HashMap<>();
+         HashMap<String,String> output=new HashMap<>();
 
         try {
             URL url = new URL(request);
@@ -151,7 +88,6 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
             //alleen als het een beveiligde api is
             //urlConnection.setRequestProperty("", API_KEY);
             //Get of Post
-
             urlConnection.setRequestMethod("GET");
             try {
 
@@ -168,15 +104,12 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
                 if (urls[1] == "getPlayerStats") {
                     Log.w("TEST", "JASON Stats");
                     output= ParseJSONPlayerStats(jObject);
-
                 } else if (urls[1] == "getPlayerInfo") {
                     Log.w("TEST", "JASON Info");
                     output=ParseJSONPlayerInfo(jObject);
-                } else if (urls[1] == "getFriendsInfo") {
+                } else if (urls[1] == "getPlayerFriends") {
                     output=ParseJSONFriendlist(jObject);
                 }
-
-
             } finally {
                 //Log.w("TEST","DoInBg");
                 urlConnection.disconnect();
@@ -188,13 +121,14 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
             Log.w("TEST", "Error returning stats");
             return null;
         }
-        Log.w("TEST", output.get("total_kills") );
+        Log.w("TEST", output.toString());
         return output;
     }
+
     @Override
     protected void onPostExecute(HashMap<String,String> result) {
         Log.w("TEST", "onPostExecute: " );
-        Log.w("TEST", result.get("total_kills") );
+
 
 
         taskCompleted.onTaskCompleted(result);
@@ -214,10 +148,12 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
         // Log.w("TEST",Integer.toString(stats.getJSONObject(0).getInt("value")));
         // Log.w("TEST",stats.getJSONObject(0).getString("name"));
         HashMap<String, String> player = new HashMap<>();
+        player.put("Type","PlayerInfo");
         for (int i = 0; i < userinfoJSON.length; i++) {
-            player.put(userinfoJSON[i], stat.getString(userinfoJSON[i]));
+            player.put(userinfoJSON[i], stat.get(userinfoJSON[i]).toString());
 
         }
+        Log.w("TEST", player.toString() );
         return player;
 
 
@@ -235,7 +171,7 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
         HashMap<String,String> player = new HashMap<>();
         Log.w("TEST", "PlayerStats parsed");
        // Log.w("TEST", player.keySet().toArray()[0].toString());
-
+       player.put("Type","PlayerStats");
         for (int i = 0; i < stats.length(); i++) {
 
             //Log.w("TEST", stats.getJSONObject(i).getString("name"));
@@ -247,7 +183,7 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
         }
        // PlayerStat = player;
       //  Log.w("TEST", "killssss : "+player.get("total_kills") );
-        Log.w("TEST", player.get("total_kills"));
+        //Log.w("TEST", player.get("total_kills"));
         return player;
 
     }
@@ -261,7 +197,7 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
         //Log.w("TEST",stats.getJSONObject(0).getString("name"));
 
         HashMap<String, String> player = new HashMap<>();
-
+        player.put("Type","Friendlist");
         for (int i = 0; i < friends.length(); i++) {
             //  Log.w("TEST","Parsing Jason");
 
