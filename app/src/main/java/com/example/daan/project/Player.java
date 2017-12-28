@@ -22,7 +22,12 @@ import static android.support.v4.content.ContextCompat.startActivity;
 
 public class Player extends SugarRecord<Player>implements AsyncResponse  {
     private static RequestFinished requestFinished;
-
+    private String[] weaponsArr= {"glock","deagle","elite","fiveseven",
+    "xm1014","mac10","ump45","p90","awp","ak47","aug","famas","g3sg1","m249","hkp2000","p250",
+    "sg556","scar20","mp7","mp9","nova","negev","sawedoff","bizon","tec9","mag7","m4a1","galilar"};
+    private String[] specialWeaponsArr={"knife","hegrenade","molotov","taser"};
+    private String[] mapsArr={"cs_office","de_cbble","de_dust2","de_dust","de_inferno","de_nuke",
+    "de_train","de_lake","de_safehouse","de_stmarc","de_bank","de_shorttrain","ar_shoots","ar_baggage","ar_monastery"};
     public static String MainPlayerSteamId;
     private HashMap<String,HashMap<String,String>>friendStats = new HashMap<>();
     private HashMap<String,HashMap<String,String>>friendInfo = new HashMap<>();
@@ -45,6 +50,8 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
    static HashMap<String, String> TempStats = new HashMap<>();
 
 
+
+
  /*   private Map<String, String> getAllPlayerStatsApi(String steamId) {
         SteamAPI getPlayerStatsAsync = (SteamAPI) new SteamAPI(new SteamAPI.AsyncResponse() {
             // MainPlayer mPlayer=new MainPlayer();
@@ -64,7 +71,33 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
     }*/
 
 
-    private String profilePicture;
+    public String getProfilePicture_large() {
+        return profilePicture_large;
+    }
+
+    public void setProfilePicture_large(String profilePicture_large) {
+        this.profilePicture_large = profilePicture_large;
+    }
+
+    public String getProfilePicture_medium() {
+        return profilePicture_medium;
+    }
+
+    public void setProfilePicture_medium(String profilePicture_medium) {
+        this.profilePicture_medium = profilePicture_medium;
+    }
+
+    public String getProfilePicture_small() {
+        return profilePicture_small;
+    }
+
+    public void setProfilePicture_small(String profilePicture_small) {
+        this.profilePicture_small = profilePicture_small;
+    }
+
+    private String profilePicture_large;
+    private String profilePicture_medium;
+    private String profilePicture_small;
     private static HashMap<String, String> tempPlayerStats = new HashMap<>();
     private static HashMap<String, String> tempPlayerInfo = new HashMap<>();
     private int totalBomPlants;
@@ -73,13 +106,7 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
     private int totalMoneyEarned;
     private int totalHeadshots;
 
-    public String getProfilePicture() {
-        return profilePicture;
-    }
 
-    public void setProfilePicture(String profilePicture) {
-        this.profilePicture = profilePicture;
-    }
 
 
     //WeaponStats
@@ -213,36 +240,57 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
        // this.friendList = ;
 
         this.playerName = tempPlayerInfo.get("personaname");
-        SteamId = tempPlayerInfo.get("steamid");
+        this.SteamId = tempPlayerInfo.get("steamid");
         this.totalTimePlayed =Integer.parseInt(tempPlayerStats.get("total_time_played"));
         this.totalKills = Integer.parseInt(tempPlayerStats.get("total_kills"));
-        this.totalWinsPistolRound = totalWinsPistolRound;
-        this.totalShots = totalShots;
-        this.totalHits = totalHits;
-        this.totalDeaths = totalDeaths;
-        this.profilePicture = profilePicture;
-        this.totalBomPlants = totalBomPlants;
-        this.totalBomDefuses = totalBomDefuses;
-        this.totalDamageDone = totalDamageDone;
-        this.totalMoneyEarned = totalMoneyEarned;
-        this.totalHeadshots = totalHeadshots;
-        this.weaponKills = weaponKills;
-        this.weaponAccuracy = weaponAccuracy;
-        this.weaponShots = weaponShots;
-        this.weaponHits = weaponHits;
-        this.mapRounds = mapRounds;
-        this.mapWins = mapWins;
-        this.lastMatchTwins = lastMatchTwins;
-        this.lastMatchCTWins = lastMatchCTWins;
-        this.lastMatchWins = lastMatchWins;
-        this.lastMatchKils = lastMatchKils;
-        this.lastMatchDeaths = lastMatchDeaths;
-        this.lastMatchFavWeapon = lastMatchFavWeapon;
+        this.totalWinsPistolRound = Integer.parseInt(tempPlayerStats.get("total_wins_pistolround"));
+        this.totalShots = Integer.parseInt(tempPlayerStats.get("total_shots_fired"));
+        this.totalHits = Integer.parseInt(tempPlayerStats.get("total_shots_hit"));
+        this.totalDeaths = Integer.parseInt(tempPlayerStats.get("total_deaths"));
+        this.profilePicture_large = tempPlayerInfo.get("avatarfull");
+        this.profilePicture_medium = tempPlayerInfo.get("avatarmedium");
+        this.profilePicture_small = tempPlayerInfo.get("avatar");
+        this.totalBomPlants = Integer.parseInt(tempPlayerStats.get("total_planted_bombs"));
+        this.totalBomDefuses = Integer.parseInt(tempPlayerStats.get("total_defused_bombs"));
+        this.totalDamageDone = Integer.parseInt(tempPlayerStats.get("total_damage_done"));
+        this.totalMoneyEarned =  Integer.parseInt(tempPlayerStats.get("total_money_earned"));
+        this.totalHeadshots = Integer.parseInt(tempPlayerStats.get("total_kills_headshot"));
+        for (int i=0;i<weaponsArr.length;i++)
+        {
+            weaponKills.put(weaponsArr[i].toString(),Integer.parseInt(tempPlayerStats.get("total_kills_"+weaponsArr[i])));
+        }
+        for (int i=0;i<specialWeaponsArr.length;i++)
+        {
+            weaponKills.put(specialWeaponsArr[i].toString(),Integer.parseInt(tempPlayerStats.get("total_kills_"+specialWeaponsArr[i])));
+        }
+        for (int i=0;i<weaponsArr.length;i++) {
+            this.weaponShots.put(weaponsArr[i],Integer.parseInt(tempPlayerStats.get("total_shots_" + weaponsArr[i])));
+        }
+        this.weaponShots.put("taser",Integer.parseInt(tempPlayerStats.get("total_shots_taser")));
+
+        for (int i=0;i<weaponsArr.length;i++) {
+            this.weaponHits.put(weaponsArr[i],Integer.parseInt(tempPlayerStats.get("total_hits_"+weaponsArr[i])));
+        }
+        for (int i=0;i<weaponsArr.length;i++)
+        {
+            this.weaponAccuracy.put(weaponsArr[i],weaponShots.get(weaponsArr[i])/weaponHits.get(weaponsArr[i]));
+
+        }
+
+       // this.mapRounds = mapRounds;
+        //this.mapWins = mapWins;
+        this.lastMatchTwins = Integer.parseInt(tempPlayerStats.get("last_match_t_wins"));
+        this.lastMatchCTWins = Integer.parseInt(tempPlayerStats.get("last_match_ct_wins"));
+        this.lastMatchWins = Integer.parseInt(tempPlayerStats.get("last_match_wins"));
+        this.lastMatchKils = Integer.parseInt(tempPlayerStats.get("last_match_kills"));
+        this.lastMatchDeaths = Integer.parseInt(tempPlayerStats.get("last_match_deaths"));
+
+       /* this.lastMatchFavWeapon = lastMatchFavWeapon;
         this.lastMatchFavWeaponShots = lastMatchFavWeaponShots;
         this.lastMatchFavWeaponHits = lastMatchFavWeaponHits;
         this.lastMatchFavWeaponKils = lastMatchFavWeaponKils;
         this.lastMatchMVP = lastMatchMVP;
-        this.lastMatchMoneySpent = lastMatchMoneySpent;
+        this.lastMatchMoneySpent = lastMatchMoneySpent;*/
     }
 
     //"http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218"
@@ -442,6 +490,10 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
             temp.init(MainPlayerSteamId,3);
 
 
+        }
+        else
+        {
+            Log.w("TEST", "ERROR");
         }
      //   Intent intent = new Intent(this,
        // startActivity(intent);

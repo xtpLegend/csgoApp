@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
        //Map<String,String> test2= test.doInBackground("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=","getPlayerStats");
 
         Player MainPlayer = new Player();
+        MainPlayer.save();
 
         TextView t;
         t=(TextView) findViewById(R.id.MainText);
@@ -169,12 +170,6 @@ public class MainActivity extends AppCompatActivity  implements NavigationView.O
 
 
 
-        public void load()
-        {
-            Intent intent = new Intent(this,SplashActivity.class);
-            //intent.putExtra("Text",text.getText().toString());
-            startActivity(intent);
-        }
 
     @Override
     public void onTaskCompleted(HashMap<String, String> response) {
