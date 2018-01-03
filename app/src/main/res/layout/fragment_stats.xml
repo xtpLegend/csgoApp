@@ -1,0 +1,119 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackground"
+    tools:context="com.example.daan.project.Stats"
+    tools:layout_editor_absoluteY="81dp">
+
+
+    <TextView
+        android:id="@+id/txtPlayerInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PlaceHolder"
+        android:textColor="@color/colorMainText"
+        app:layout_constraintStart_toStartOf="@+id/txtPlayerName"
+        app:layout_constraintTop_toBottomOf="@+id/txtPlayerName" />
+
+    <TextView
+        android:id="@+id/txtPlayerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_weight="1"
+        android:text="PlaceHolder"
+        android:textColor="@color/colorMainText"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/avatar"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp" />
+
+    <ImageView
+        android:id="@+id/avatar"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:scaleType="fitXY"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="24dp" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/PieChart"
+        android:layout_width="0dp"
+        android:layout_height="159dp"
+        android:layout_marginBottom="49dp"
+        android:layout_marginEnd="111dp"
+        app:layout_constraintBottom_toBottomOf="@+id/txtAccuraty"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/headShotPercentage"
+        android:layout_marginRight="111dp" />
+
+    <TextView
+        android:id="@+id/txtTotalKills"
+        android:layout_width="wrap_content"
+        android:layout_height="93dp"
+        android:layout_marginBottom="242dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="244dp"
+        android:fontFamily="casual"
+        android:text="TextView"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/avatar"
+        android:gravity="start" />
+
+    <TextView
+        android:id="@+id/txtAccuraty"
+        android:layout_width="wrap_content"
+        android:layout_height="91dp"
+        android:layout_marginBottom="244dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="244dp"
+        android:text="TextView"
+        android:textAlignment="textEnd"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtPlayerName"
+        android:gravity="end" />
+
+    <TextView
+        android:id="@+id/headShotPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="92dp"
+        android:layout_marginBottom="86dp"
+        android:layout_marginEnd="37dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="90dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/txtTotalKills"
+        app:layout_constraintEnd_toStartOf="@+id/PieChart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="37dp" />
+
+    <TextView
+        android:id="@+id/txtTotalDeaths"
+        android:layout_width="wrap_content"
+        android:layout_height="91dp"
+        android:layout_marginBottom="87dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="90dp"
+        android:text="TextView"
+        android:textAlignment="textEnd"
+        app:layout_constraintBottom_toTopOf="@+id/txtAccuraty"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="end" />
+
+
+</android.support.constraint.ConstraintLayout>

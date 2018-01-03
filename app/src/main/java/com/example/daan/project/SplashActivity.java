@@ -8,12 +8,12 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ImageView;
 
 import java.util.HashMap;
 
-public class SplashActivity extends AppCompatActivity implements RequestFinished,AsyncResponse{
-
+public class SplashActivity extends AppCompatActivity implements RequestFinished,AsyncResponse,FriendRequestFinished,FriendStatsResponse{
+static int friendCounter;
+static Player mp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +39,7 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
                 String steamId = pref.getString("steamid","");
                 //SteamAPI test = new SteamAPI(this);
                 Player p2=new Player(steamId,this);
+
 
 
 
@@ -83,11 +84,10 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
 
     @Override
     public void onTaskCompleted() {
-        Log.w("TEST", "IntentSplash" );
-        Intent intent = new Intent(this, SplashActivity.class);
-        intent.putExtra("DoneLoading","True");
-        startActivity(intent);
-        finish();
+       mp = new Player();
+        friendCounter=mp.getFriendList().size();
+        Friend f1 = new Friend(mp.getFriendList().get("3"),this);
+
 
     }
 
@@ -95,10 +95,35 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
     public void onTaskCompleted(HashMap<String, String> response) {
         Log.w("TEST", "AsyncResponseSplash");
     }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    @Override
+    public void friendRequestCompleted() {
+        if (friendCounter==0)
+        {
+            Log.w("TEST", "IntentSplash" );
+            Intent intent = new Intent(this, SplashActivity.class);
+            intent.putExtra("DoneLoading","True");
+            startActivity(intent);
+            finish();
+        }
+        else
+        {
+             HashMap<String, String> friendList = mp.getFriendList();
+            friendCounter--;
+            Friend tmp = new Friend(friendList.get(Integer.toString(friendCounter)),this);
+        }
+
+    }
+
+    @Override
+    public void onFriendResponseCompeted(HashMap<String, String> response) {
+        Log.w("TEST", "FriendResponseSplash");
     }
 }

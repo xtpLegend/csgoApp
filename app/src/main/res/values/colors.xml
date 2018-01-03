@@ -2,10 +2,13 @@
 <resources>
     <color name="colorPrimary">#212121</color>
     <color name="colorPrimaryDark">#424242</color>
-    <color name="colorAccent">#FF8F00</color>
+    <color name="colorAccent">#E4524B</color>
     <color name="colorBackground">#424242</color>
     <color name="colorBackgroundTint">#424242</color>
     <color name="colorTopMenu">#424242</color>
+    <color name="colorMainText">#ffffff</color>
+    <color name="colorGraphKills">#6CA6D2</color>
+    <color name="colorGraphDeaths">#E4524B</color>
 
 
 </resources>

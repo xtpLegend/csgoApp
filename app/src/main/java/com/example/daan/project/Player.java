@@ -1,26 +1,18 @@
 package com.example.daan.project;
 
-import android.content.Context;
-import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.util.LogWriter;
 import android.util.Log;
 
 import com.orm.SugarRecord;
 
-import java.util.Collection;
+import java.io.Serializable;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ExecutionException;
-
-import static android.support.v4.content.ContextCompat.startActivity;
+import java.util.Locale;
 
 /**
  * Created by daan on 11.11.17.
  */
 
-public class Player extends SugarRecord<Player>implements AsyncResponse  {
+public class Player extends SugarRecord<Player>implements AsyncResponse,Serializable {
     private static RequestFinished requestFinished;
     private String[] weaponsArr= {"glock","deagle","elite","fiveseven",
     "xm1014","mac10","ump45","p90","awp","ak47","aug","famas","g3sg1","m249","hkp2000","p250",
@@ -29,9 +21,14 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
     private String[] mapsArr={"cs_office","de_cbble","de_dust2","de_dust","de_inferno","de_nuke",
     "de_train","de_lake","de_safehouse","de_stmarc","de_bank","de_shorttrain","ar_shoots","ar_baggage","ar_monastery"};
     public static String MainPlayerSteamId;
-    private HashMap<String,HashMap<String,String>>friendStats = new HashMap<>();
+    private static HashMap<Integer,Player>friendStats = new HashMap<>();
     private HashMap<String,HashMap<String,String>>friendInfo = new HashMap<>();
-    private HashMap<String, String> friendList = new HashMap<>();
+
+    public HashMap<String, String> getFriendList() {
+        return friendList;
+    }
+
+    private static HashMap<String, String> friendList = new HashMap<>();
     //Global stats
     private SteamAPI API = new SteamAPI(this);
 
@@ -41,11 +38,26 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
 
     private String playerName;
     private String SteamId;
-    private int totalTimePlayed;
+
     private int totalKills;
+
+    public float getKillDeath() {
+        return killDeath;
+    }
+
+    public void setKillDeath(float killDeath) {
+        this.killDeath = killDeath;
+    }
+
+    private float killDeath;
     private int totalWinsPistolRound;
     private int totalShots;
     private int totalHits;
+
+    public int getTotalDeaths() {
+        return totalDeaths;
+    }
+
     private int totalDeaths;
    static HashMap<String, String> TempStats = new HashMap<>();
 
@@ -98,8 +110,38 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
     private String profilePicture_large;
     private String profilePicture_medium;
     private String profilePicture_small;
+    private String realname;
+
+    public String getRealname() {
+        return realname;
+    }
+
+    public void setRealname(String realname) {
+        this.realname = realname;
+    }
+
+    public Locale getNationality() {
+        return nationality;
+    }
+
+    public void setNationality(Locale nationality) {
+        this.nationality = nationality;
+    }
+
+    public String getSteamUrl() {
+        return steamUrl;
+    }
+
+    public void setSteamUrl(String steamUrl) {
+        this.steamUrl = steamUrl;
+    }
+
+    private Locale nationality;
+    private String steamUrl;
+    private long totalTimePlayed;
     private static HashMap<String, String> tempPlayerStats = new HashMap<>();
     private static HashMap<String, String> tempPlayerInfo = new HashMap<>();
+
     private int totalBomPlants;
     private int totalBomDefuses;
     private int totalDamageDone;
@@ -240,8 +282,12 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
        // this.friendList = ;
 
         this.playerName = tempPlayerInfo.get("personaname");
-        this.SteamId = tempPlayerInfo.get("steamid");
         this.totalTimePlayed =Integer.parseInt(tempPlayerStats.get("total_time_played"));
+        this.steamUrl=tempPlayerInfo.get("profileurl");
+        this.SteamId = tempPlayerInfo.get("steamid");
+        this.realname=tempPlayerInfo.get("realname");
+        this.nationality=new Locale("",tempPlayerInfo.get("loccountrycode"));
+
         this.totalKills = Integer.parseInt(tempPlayerStats.get("total_kills"));
         this.totalWinsPistolRound = Integer.parseInt(tempPlayerStats.get("total_wins_pistolround"));
         this.totalShots = Integer.parseInt(tempPlayerStats.get("total_shots_fired"));
@@ -284,7 +330,7 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
         this.lastMatchWins = Integer.parseInt(tempPlayerStats.get("last_match_wins"));
         this.lastMatchKils = Integer.parseInt(tempPlayerStats.get("last_match_kills"));
         this.lastMatchDeaths = Integer.parseInt(tempPlayerStats.get("last_match_deaths"));
-
+        this.killDeath = this.getTotalKills()/this.getTotalDeaths();
        /* this.lastMatchFavWeapon = lastMatchFavWeapon;
         this.lastMatchFavWeaponShots = lastMatchFavWeaponShots;
         this.lastMatchFavWeaponHits = lastMatchFavWeaponHits;
@@ -472,7 +518,7 @@ public class Player extends SugarRecord<Player>implements AsyncResponse  {
             Log.w("TEST", "OnTaskCompletedPlayer");
             tempPlayerStats = response;
             //Player();
-            tempPlayerStats.get("total_kills");
+            Log.w("TEST", tempPlayerStats.get("total_kills"));
 
             temp.init(MainPlayerSteamId,2);
 

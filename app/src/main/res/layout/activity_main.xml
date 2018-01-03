@@ -12,8 +12,10 @@
 
     <include
         layout="@layout/app_bar_main"
-        android:layout_width="30px"
-        android:layout_height="30px" />
+        android:layout_width="30dp"
+        android:layout_height="30dp" />
+
+
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
