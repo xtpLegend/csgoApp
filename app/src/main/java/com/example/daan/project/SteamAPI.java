@@ -1,25 +1,17 @@
 package com.example.daan.project;
 
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by daan on 11.11.17.
@@ -138,7 +130,7 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
     }
 
 
-    protected  HashMap<String,String> ParseJSONPlayerInfo(JSONObject jObject) throws JSONException {
+    protected  HashMap<String,String> ParseJSONPlayerInfo(JSONObject jObject) throws JSONException  {
         JSONObject JPlayerInfo = jObject.getJSONObject("response");
 
         Log.w("TEST", JPlayerInfo.toString());
@@ -149,8 +141,22 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
         // Log.w("TEST",stats.getJSONObject(0).getString("name"));
         HashMap<String, String> player = new HashMap<>();
         player.put("Type","PlayerInfo");
-        for (int i = 0; i < userinfoJSON.length; i++) {
-            player.put(userinfoJSON[i], stat.get(userinfoJSON[i]).toString());
+        Log.w("TEST", Integer.toString( stat.length()) );
+        for (int i = 0; i < stat.length(); i++) {
+            if (stat.has(userinfoJSON[i]))
+            {
+                player.put(userinfoJSON[i].toString(),stat.get(userinfoJSON[i]).toString());
+
+            }
+            else
+            {
+                player.put(userinfoJSON[i].toString(),"NotImplemented");
+
+            }
+
+
+
+
 
         }
         Log.w("TEST", player.toString() );
@@ -173,7 +179,6 @@ public class SteamAPI extends AsyncTask<String, Void, HashMap<String,String>> {
        // Log.w("TEST", player.keySet().toArray()[0].toString());
        player.put("Type","PlayerStats");
         for (int i = 0; i < stats.length(); i++) {
-
             //Log.w("TEST", stats.getJSONObject(i).getString("name"));
           player.put(stats.getJSONObject(i).getString("name").trim(), stats.getJSONObject(i).getString("value").trim());
 

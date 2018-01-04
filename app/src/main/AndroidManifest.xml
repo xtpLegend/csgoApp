@@ -23,8 +23,14 @@
         <activity
             android:name=".MainActivity"
             android:label="csgoApp"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".StartScreen" />
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".StartScreen"
+            android:label="csgoApp"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".ChooseFriends"
+            android:label="csgoApp"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">

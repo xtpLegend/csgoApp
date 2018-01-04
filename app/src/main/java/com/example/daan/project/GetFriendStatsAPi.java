@@ -140,8 +140,16 @@ public class GetFriendStatsAPi extends AsyncTask<String, Void, HashMap<String,St
         HashMap<String, String> player = new HashMap<>();
         player.put("Type","PlayerInfo");
         for (int i = 0; i < 5; i++) {
-            player.put(userinfoJSON[i], stat.get(userinfoJSON[i]).toString());
+            if (stat.has(userinfoJSON[i]))
+            {
+                player.put(userinfoJSON[i], stat.get(userinfoJSON[i]).toString());
 
+            }
+            else
+            {
+                player.put(userinfoJSON[i].toString(),"NotImplemented");
+
+            }
         }
         Log.w("TEST", player.toString() );
         return player;

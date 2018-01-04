@@ -40,11 +40,6 @@ static Player mp;
                 //SteamAPI test = new SteamAPI(this);
                 Player p2=new Player(steamId,this);
 
-
-
-
-
-
                 // Log.w("TEST", "Pref contains steamid");
 
                // Player p1=new Player("76561198129798218");
@@ -67,14 +62,15 @@ static Player mp;
         if(dataSave.contains("firstTime")){ // first run is happened
             //  Log.w("TEST", "Not FirtsRun");
         }
-        else{ //  this is the first run of application
-            SharedPreferences.Editor editor = dataSave.edit();
-            editor.putString("firstTime", "yes");
-            editor.apply();
-            // Log.w("TEST", "FirtsRun");
+        else if (!dataSave.contains("steamid"))
+        {
             Intent intent = new Intent(this,StartScreen.class);
             //intent.putExtra("Text",text.getText().toString());
             startActivity(intent);
+        }
+        else { //  this is the first run of application
+
+
         }
 
 
@@ -85,8 +81,9 @@ static Player mp;
     @Override
     public void onTaskCompleted() {
        mp = new Player();
-        friendCounter=mp.getFriendList().size();
-        Friend f1 = new Friend(mp.getFriendList().get("3"),this);
+        //friendCounter=mp.getFriendList().size();
+        friendCounter=10;
+        Friend f1 = new Friend(mp.getFriendList().get("1"),this);
 
 
     }
@@ -108,15 +105,17 @@ static Player mp;
         if (friendCounter==0)
         {
             Log.w("TEST", "IntentSplash" );
-            Intent intent = new Intent(this, SplashActivity.class);
+            Intent intent = new Intent(this, ChooseFriends.class);
             intent.putExtra("DoneLoading","True");
             startActivity(intent);
+           // Log.w("TEST", Friend.tempFriendInfo.get(1).get("steamid") );
             finish();
         }
         else
         {
              HashMap<String, String> friendList = mp.getFriendList();
             friendCounter--;
+            String tests = friendList.get(Integer.toString(friendCounter));
             Friend tmp = new Friend(friendList.get(Integer.toString(friendCounter)),this);
         }
 
