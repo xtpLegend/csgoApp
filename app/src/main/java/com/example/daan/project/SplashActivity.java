@@ -9,81 +9,82 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
-public class SplashActivity extends AppCompatActivity implements RequestFinished,AsyncResponse,FriendRequestFinished,FriendStatsResponse{
-static int friendCounter;
-static Player mp;
+public class SplashActivity extends AppCompatActivity implements RequestFinished, AsyncResponse, FriendRequestFinished, FriendStatsResponse {
+    static int friendCounter;
+    static Player mp;
+    SharedPreferences pref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent doneIntent = getIntent();
         Bundle doneBundle = doneIntent.getExtras();
-        if (doneBundle!= null)
-        {
 
-
+        if (doneBundle != null) {
             //Log.w("TEST", "SplashActivity P1 kills : " + p1.getTotalKills() );
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             finish();
-        }
-        else
-        {
+        } else {
             CheckFirstTime();
-            SharedPreferences pref;
-            pref = getSharedPreferences("preferences", this.MODE_PRIVATE);
+            SharedPreferences preferences;
+            preferences = getSharedPreferences("preferences", this.MODE_PRIVATE);
 
-            if(pref.contains("steamid"))
-            {
-                String steamId = pref.getString("steamid","");
+            if (preferences.contains("steamid")) {
+                String steamId = preferences.getString("steamid", "");
                 //SteamAPI test = new SteamAPI(this);
-                Player p2=new Player(steamId,this);
+                Player p2 = new Player(steamId, this);
 
                 // Log.w("TEST", "Pref contains steamid");
 
-               // Player p1=new Player("76561198129798218");
+                // Player p1=new Player("76561198129798218");
                 //Log.w("TEST", "PlayerCreated");
 
                 // profileImg.setImageURI("");
             }
-
         }
-
     }
 
 
-
-    public void CheckFirstTime()
-    {
+    public void CheckFirstTime() {
         SharedPreferences dataSave;
         dataSave = getSharedPreferences("preferences", this.MODE_PRIVATE);
 
-        if(dataSave.contains("firstTime")){ // first run is happened
+        if (dataSave.contains("firstTime")) { // first run is happened
             //  Log.w("TEST", "Not FirtsRun");
-        }
-        else if (!dataSave.contains("steamid"))
-        {
-            Intent intent = new Intent(this,StartScreen.class);
+        } else if (!dataSave.contains("steamid")) {
+            Intent intent = new Intent(this, StartScreen.class);
             //intent.putExtra("Text",text.getText().toString());
             startActivity(intent);
-        }
-        else { //  this is the first run of application
+        } else { //  this is the first run of application
 
 
         }
-
 
 
     }
 
-
+    //Wordt aangeroepen als de volledige Player request klaar is
     @Override
     public void onTaskCompleted() {
-       mp = new Player();
+        pref = getSharedPreferences("Friends",MODE_PRIVATE);
+        mp = new Player();
         //friendCounter=mp.getFriendList().size();
-        friendCounter=10;
-        Friend f1 = new Friend(mp.getFriendList().get("1"),this);
+        if (pref.contains("Friends")){
+            friendCounter =pref.getStringSet("Friends",null).size() ;
+        }
+        else {
+            friendCounter=mp.getFriendList().size();
+        }
+
+
+            Friend f1 = new Friend(mp.getFriendList().get("1"), this,true);
+
+
 
 
     }
@@ -99,27 +100,47 @@ static Player mp;
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
+    // Wordt aangeroepen als een friend request gedaan is
     @Override
     public void friendRequestCompleted() {
-        if (friendCounter==0)
-        {
-            Log.w("TEST", "IntentSplash" );
+        pref=getSharedPreferences("Friends",MODE_PRIVATE);
+        if (friendCounter == 0 && !pref.contains("Friends")) {
+            Log.w("TEST", "IntentSplash");
             Intent intent = new Intent(this, ChooseFriends.class);
-            intent.putExtra("DoneLoading","True");
+            intent.putExtra("DoneLoading", "True");
             startActivity(intent);
-           // Log.w("TEST", Friend.tempFriendInfo.get(1).get("steamid") );
+            // Log.w("TEST", Friend.tempFriendInfo.get(1).get("steamid") );
             finish();
+        }
+        if (pref.contains("Friends")&& friendCounter != 0)
+        {
+
+
+            Set<String>friendList= pref.getStringSet("Friends",null);
+            String test= friendList.toArray()[0].toString();
+            Friend tmp = new Friend(friendList.toArray()[friendCounter-1].toString(), this,true);
+            friendCounter--;
+        }
+        else if (pref.contains("Friends")&& friendCounter == 0)
+        {
+
+            ArrayList<Friend> te = Friend.tempFriendlist;
+            Log.w("TEST", Friend.tempFriendlist.get(1).getPlayerName());
+            Intent intent = new Intent(this,MainActivity.class);
+            startActivity(intent);
+            finish();
+
+
         }
         else
         {
-             HashMap<String, String> friendList = mp.getFriendList();
+            HashMap<String, String> friendList = mp.getFriendList();
             friendCounter--;
-            String tests = friendList.get(Integer.toString(friendCounter));
-            Friend tmp = new Friend(friendList.get(Integer.toString(friendCounter)),this);
+            Friend tmp = new Friend(friendList.get(Integer.toString(friendCounter)), this);
         }
 
     }
+
 
     @Override
     public void onFriendResponseCompeted(HashMap<String, String> response) {

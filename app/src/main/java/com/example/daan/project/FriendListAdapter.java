@@ -18,6 +18,9 @@ import java.util.ArrayList;
 public class FriendListAdapter extends ArrayAdapter {
     private ArrayList<String> dataSet= new ArrayList<>();
     private ArrayList<Boolean> checkedBox= new ArrayList<>();
+
+
+    private ArrayList<String> id= new ArrayList<>();
     Context mContext;
 
     private static class ViewHolder {
@@ -25,7 +28,7 @@ public class FriendListAdapter extends ArrayAdapter {
         CheckBox checkBox;
     }
 
-    public FriendListAdapter(ArrayList data, Context context) {
+    public FriendListAdapter(ArrayList data,ArrayList id, Context context) {
         super(context, R.layout.fragment_friend_item, data);
         this.dataSet = data;
         this.mContext = context;
@@ -33,6 +36,7 @@ public class FriendListAdapter extends ArrayAdapter {
         {
             checkedBox.add(false);
         }
+        this.id=id;
 
     }
     @Override
@@ -79,5 +83,27 @@ public class FriendListAdapter extends ArrayAdapter {
 
 
         return result;
+    }
+    public ArrayList<Boolean> getCheckedBox() {
+        return checkedBox;
+    }
+
+    public void setCheckedBox(ArrayList<Boolean> checkedBox) {
+        this.checkedBox = checkedBox;
+    }
+    public ArrayList<String> getDataSet() {
+        return dataSet;
+    }
+
+    public void setDataSet(ArrayList<String> dataSet) {
+        this.dataSet = dataSet;
+    }
+
+    public ArrayList<String> getId() {
+        return id;
+    }
+
+    public void setId(ArrayList<String> id) {
+        this.id = id;
     }
 }

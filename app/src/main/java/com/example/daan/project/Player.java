@@ -764,8 +764,6 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
 
             temp.init(MainPlayerSteamId,2);
 
-
-
         } else if (response.get("Type")=="Friendlist") {
             friendList=response;
             requestFinished.onTaskCompleted();

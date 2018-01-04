@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ChooseFriends extends Activity {
     ArrayList dataModels;
@@ -26,13 +27,15 @@ public class ChooseFriends extends Activity {
         listView = (ListView) findViewById(R.id.listView);
         final Button btn = (Button) findViewById(R.id.btnSave);
         ArrayList<String> playerList = new ArrayList<>();
-
+        ArrayList<String> id = new ArrayList<>();
 
         for (int i=0;i<Friend.tempFriendlist.size();i++)
         {
             playerList.add(Friend.tempFriendlist.get(i).getPlayerName());
+            id.add(Friend.tempFriendlist.get(i).getSteamId());
+
         }
-        adapter =new FriendListAdapter(playerList,getApplicationContext());
+        adapter =new FriendListAdapter(playerList,id,getApplicationContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -63,7 +66,27 @@ public class ChooseFriends extends Activity {
 
     public void Onclick(View v)
     {
-        Intent intent = new Intent(this,MainActivity.class);
+        ArrayList<Boolean> checked = adapter.getCheckedBox();
+        ArrayList<String> friendlist = adapter.getDataSet();
+        ArrayList<String> id = adapter.getId();
+        HashSet<String> savedFriends=new HashSet<>();
+        for (int i=0;i<friendlist.size();i++)
+        {
+            if (checked.get(i))
+            {
+                savedFriends.add(id.get(i));
+            }
+
+        }
+        SharedPreferences prefs = getSharedPreferences("Friends", this.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        editor.putStringSet("Friends",savedFriends);
+        editor.commit();
+
+        Intent intent = new Intent(this,SplashActivity.class);
+        editor.putString("FriendPref","done" );
+        editor.apply();
         startActivity(intent);
     }
 

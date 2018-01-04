@@ -139,7 +139,7 @@ public class GetFriendStatsAPi extends AsyncTask<String, Void, HashMap<String,St
         // Log.w("TEST",stats.getJSONObject(0).getString("name"));
         HashMap<String, String> player = new HashMap<>();
         player.put("Type","PlayerInfo");
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < stat.length(); i++) {
             if (stat.has(userinfoJSON[i]))
             {
                 player.put(userinfoJSON[i], stat.get(userinfoJSON[i]).toString());
@@ -170,7 +170,7 @@ public class GetFriendStatsAPi extends AsyncTask<String, Void, HashMap<String,St
         Log.w("TEST", "PlayerStats parsed");
        // Log.w("TEST", player.keySet().toArray()[0].toString());
        player.put("Type","PlayerStats");
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < stats.length(); i++) {
 
             //Log.w("TEST", stats.getJSONObject(i).getString("name"));
           player.put(stats.getJSONObject(i).getString("name").trim(), stats.getJSONObject(i).getString("value").trim());
@@ -196,7 +196,7 @@ public class GetFriendStatsAPi extends AsyncTask<String, Void, HashMap<String,St
 
         HashMap<String, String> player = new HashMap<>();
         player.put("Type","Friendlist");
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < JPlayerFriends.length(); i++) {
             //  Log.w("TEST","Parsing Jason");
 
             player.put(Integer.toString(i), friends.getJSONObject(i).getString("steamid"));

@@ -1,29 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.daan.project.ChooseFriends"
     android:background="@color/colorBackground"
-    >
+    tools:context="com.example.daan.project.ChooseFriends"
+    tools:layout_editor_absoluteY="25dp"
+    android:rowCount="2"
+    android:columnCount="2">
 
-    <Button
-        android:id="@+id/btnSave"
+    <TextView
+        android:id="@+id/txtFriendListText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:layout_marginRight="16dp"
-        android:text="Button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:onClick="Onclick"/>
+        android:layout_column="1"
+        android:layout_row="0"
+        android:text="Choose the friends you like to save"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
-    <ListView
-        android:id="@+id/listView"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:focusable="true"/>
+        android:layout_height="match_parent"
+        android:layout_column="1"
+        android:layout_row="1"
+        android:background="@color/colorBackground"
+        tools:context="com.example.daan.project.ChooseFriends"
+        tools:layout_editor_absoluteY="25dp"
 
-</android.support.constraint.ConstraintLayout>
+        >
+
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+        </ListView>
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_marginBottom="72dp"
+            android:layout_marginRight="16dp"
+            android:layout_row="2"
+            android:background="@color/colorPrimary"
+            android:onClick="Onclick"
+            android:text="Save"
+            android:textColor="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+
+
+
+
+</GridLayout>
