@@ -5,9 +5,11 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
@@ -28,10 +30,17 @@ import java.util.ArrayList;
 public class Stats extends Fragment {
     final static String ARG_POSITION = "position";
     int mCurrentPosition = -1;
-
+    private Player p;
+    private Friend f;
     private PieChart pieChart;
+    TextView txtTotalKills;
+    TextView txtTotalDeaths;
+    TextView txtAccuraty;
+    TextView txtHeadshotPercentage;
+    TextView txtPlayerName;
+    TextView txtPlayerInfo;
 
-    private Player player;
+    private static String steamid;
 
 
     private OnFragmentInteractionListener mListener;
@@ -40,32 +49,60 @@ public class Stats extends Fragment {
         // Required empty public constructor
     }
 
-    public static Stats newInstance(Player p) {
+    public static Stats newInstance(String p) {
         Stats fragment = new Stats();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("key", p);
-        fragment.setArguments(bundle);
+        steamid = p;
+
+        // Bundle bundle = new Bundle();
+        // bundle.putSerializable("key", p);
+        //fragment.setArguments(bundle);
+
         return fragment;
     }
 
+    public Object getObjectFromSteamId(String id) {
+        ArrayList<Friend> friendlist = new ArrayList<>();
+        Player mp = new Player("player");
+        if (id.equals(mp.getSteamId())) {
+            return mp;
+        } else {
+            Friend tmpFriend;
+            for (int i = 0; i < Friend.tempFriendlist.size(); i++) {
+                if (Friend.tempFriendlist.get(i).getSteamId().equals(id)) {
+                    tmpFriend = Friend.tempFriendlist.get(i);
+                    return tmpFriend;
+                }
+            }
+
+        }
+        return null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
+        View view = inflater.inflate(R.layout.fragment_stats, container, false);//Inflate Layout
+        p=new Player("player");
+        if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Friend"))
+        f=(Friend) getObjectFromSteamId(steamid);
+        txtTotalKills = (TextView) view.findViewById(R.id.txtTotalKills);
+        txtTotalDeaths =(TextView) view.findViewById(R.id.txtTotalDeaths);
+        txtAccuraty = (TextView) view.findViewById(R.id.txtAccuraty);
+        txtHeadshotPercentage = (TextView) view.findViewById(R.id.txtHeadShotPercentage);
+        txtPlayerName = (TextView) view.findViewById(R.id.txtPlayerName);
+        txtPlayerInfo= (TextView) view.findViewById(R.id.txtPlayerInfo);
 
-      View view = inflater.inflate(R.layout.fragment_stats, container, false);//Inflate Layout
 
-
-
-        pieChart = view.findViewById(R.id.PieChart);
+        pieChart = (PieChart) view.findViewById(R.id.PieChart);
 
 
         //pieChart.setUsePercentValues(true);
         //pieChart.setHoleColor(Color.BLUE);
         //pieChart.setCenterTextColor(Color.BLACK);
         pieChart.setHoleRadius(90);
+        pieChart.setRotationEnabled(false);
         pieChart.setTransparentCircleAlpha(0);
         pieChart.setCenterText("K/D");
         pieChart.setCenterTextColor(Color.parseColor("#FF3333"));
@@ -75,14 +112,34 @@ public class Stats extends Fragment {
         //pieChart.setDrawEntryLabels(true);
         //pieChart.setEntryLabelTextSize(20);
         //More options just check out the documentation!
-        addDataSet(player);
+        addDataSet(getObjectFromSteamId(steamid));
 
+        Log.w("TEST", getObjectFromSteamId(steamid).getClass().getSimpleName());
         //pieChart.animateX(1000);
+        if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Friend"))
+        {
+            txtAccuraty.setText(Float.toString(f.getAccuracy()));
+            txtTotalDeaths.setText(Float.toString(f.getTotalDeaths()));
+            txtTotalKills.setText(Float.toString(f.getTotalKills()));
+            txtHeadshotPercentage.setText(Float.toString(f.getHeadshotPercentage()));
+            txtPlayerName.setText(f.getPlayerName());
+            txtPlayerInfo.setText(f.getRealname()+ " " + f.getNationality());
+        }
+        if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Player"))
+        {
+            txtAccuraty.setText(Float.toString(p.getAccuracy()));
+            txtTotalDeaths.setText(Integer.toString(p.getTotalDeaths()));
+            txtTotalKills.setText(Integer.toString(p.getTotalKills()));
+            txtHeadshotPercentage.setText(Float.toString(p.getHeadshotPercentage()));
+            txtPlayerName.setText(p.getPlayerName());
+            txtPlayerInfo.setText(p.getRealname()+ " " + p.getNationality());
+        }
         pieChart.animateY(2000);
 
+
         Legend l = pieChart.getLegend();
-        l.setEnabled(false);
-        return inflater.inflate(R.layout.fragment_stats, container, false);
+        l.setEnabled(true);
+        return view;
 
 
     }
@@ -98,7 +155,7 @@ public class Stats extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-           mListener = (OnFragmentInteractionListener) context;
+            mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -110,6 +167,7 @@ public class Stats extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -128,11 +186,13 @@ public class Stats extends Fragment {
         }
 
     }
+
     public void updateStatsView(int position) {
-       // TextView article = (TextView) getActivity().findViewById(R.id.article);
+        // TextView article = (TextView) getActivity().findViewById(R.id.article);
         //article.setText(Ipsum.Articles[position]);
         mCurrentPosition = position;
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -156,13 +216,20 @@ public class Stats extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public void addDataSet(Player p) {
-        Player t = new Player();
-        ArrayList<PieEntry> yEntrys = new ArrayList<>();
-        ArrayList<String> xEntrys = new ArrayList<>();
+    ArrayList<PieEntry> yEntrys = new ArrayList<>();
+    ArrayList<String> xEntrys = new ArrayList<>();
 
-        yEntrys.add(new PieEntry(t.getTotalDeaths()));
-        yEntrys.add(new PieEntry(t.getTotalKills()));
+    public void addDataSet(Object p) {
+        if (p.getClass().getSimpleName().equals("Player")) {
+            Player tmpP = (Player) p;
+            yEntrys.add(new PieEntry(tmpP.getTotalDeaths()));
+            yEntrys.add(new PieEntry(tmpP.getTotalKills()));
+        } else {
+            Friend tmpF = (Friend) p;
+            yEntrys.add(new PieEntry(tmpF.getTotalDeaths()));
+            yEntrys.add(new PieEntry(tmpF.getTotalKills()));
+        }
+
 
         pieChart.getDescription().setEnabled(false);
         //create the data set
@@ -185,6 +252,6 @@ public class Stats extends Fragment {
         PieData pieData = new PieData(pieDataSet);
         pieChart.setData(pieData);
         pieChart.invalidate();
-        pieChart.invalidate();
+
     }
 }

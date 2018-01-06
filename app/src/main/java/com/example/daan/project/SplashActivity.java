@@ -17,9 +17,10 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
     static int friendCounter;
     static Player mp;
     SharedPreferences pref;
-
+    static boolean networkStatus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        networkStatus=isNetworkAvailable();
         super.onCreate(savedInstanceState);
         Intent doneIntent = getIntent();
         Bundle doneBundle = doneIntent.getExtras();
@@ -37,7 +38,21 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
             if (preferences.contains("steamid")) {
                 String steamId = preferences.getString("steamid", "");
                 //SteamAPI test = new SteamAPI(this);
-                Player p2 = new Player(steamId, this);
+                if (isNetworkAvailable())
+                {
+                    Player p2 = new Player(steamId, this);
+                    p2.save();
+                }
+                else
+                {
+                    Player p = Player.findById(Player.class, (long) 1);
+                    Log.w("TEST",Integer.toString(p.getTotalKills()));
+                    Intent intentMain= new Intent(this, MainActivity.class);
+                    startActivity(intentMain);
+                    finish();
+
+                }
+
 
                 // Log.w("TEST", "Pref contains steamid");
 
@@ -60,6 +75,7 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
             Intent intent = new Intent(this, StartScreen.class);
             //intent.putExtra("Text",text.getText().toString());
             startActivity(intent);
+            finish();
         } else { //  this is the first run of application
 
 
@@ -80,7 +96,6 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
         else {
             friendCounter=mp.getFriendList().size();
         }
-
 
             Friend f1 = new Friend(mp.getFriendList().get("1"), this,true);
 
@@ -112,7 +127,7 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
             // Log.w("TEST", Friend.tempFriendInfo.get(1).get("steamid") );
             finish();
         }
-        if (pref.contains("Friends")&& friendCounter != 0)
+        else if (pref.contains("Friends")&& friendCounter != 0)
         {
 
 

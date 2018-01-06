@@ -12,17 +12,18 @@ import java.util.Locale;
  * Created by daan on 11.11.17.
  */
 
-public class Player extends SugarRecord<Player>implements AsyncResponse,Serializable {
+public class Player extends SugarRecord<Player> implements AsyncResponse, Serializable {
     private static RequestFinished requestFinished;
-    private String[] weaponsArr= {"glock","deagle","elite","fiveseven",
-    "xm1014","mac10","ump45","p90","awp","ak47","aug","famas","g3sg1","m249","hkp2000","p250",
-    "sg556","scar20","mp7","mp9","nova","negev","sawedoff","bizon","tec9","mag7","m4a1","galilar"};
-    private String[] specialWeaponsArr={"knife","hegrenade","molotov","taser"};
-    private String[] mapsArr={"cs_office","de_cbble","de_dust2","de_dust","de_inferno","de_nuke",
-    "de_train","de_lake","de_safehouse","de_stmarc","de_bank","de_shorttrain","ar_shoots","ar_baggage","ar_monastery"};
+    private String[] weaponsArr = {"glock", "deagle", "elite", "fiveseven",
+            "xm1014", "mac10", "ump45", "p90", "awp", "ak47", "aug", "famas", "g3sg1", "m249", "hkp2000", "p250",
+            "sg556", "scar20", "mp7", "mp9", "nova", "negev", "sawedoff", "bizon", "tec9", "mag7", "m4a1", "galilar"};
+    private String[] specialWeaponsArr = {"knife", "hegrenade", "molotov", "taser"};
+    private String[] mapsArr = {"cs_office", "de_cbble", "de_dust2", "de_dust", "de_inferno", "de_nuke",
+            "de_train", "de_lake", "de_safehouse", "de_stmarc", "de_bank", "de_shorttrain", "ar_shoots", "ar_baggage", "ar_monastery"};
     public static String MainPlayerSteamId;
-    private static HashMap<Integer,Player>friendStats = new HashMap<>();
-    private HashMap<String,HashMap<String,String>>friendInfo = new HashMap<>();
+    public float accuracy;
+    private static HashMap<Integer, Player> friendStats = new HashMap<>();
+    private HashMap<String, HashMap<String, String>> friendInfo = new HashMap<>();
 
     public HashMap<String, String> getFriendList() {
         return friendList;
@@ -37,6 +38,13 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
     }
 
     private String playerName;
+
+    private float headshotPercentage;
+
+    public String getSteamId() {
+        return SteamId;
+    }
+
     private String SteamId;
 
     private int totalKills;
@@ -51,15 +59,24 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
 
     private float killDeath;
     private int totalWinsPistolRound;
-    private int totalShots;
-    private int totalHits;
+
+    public float getTotalShots() {
+        return totalShots;
+    }
+
+    public float getTotalHits() {
+        return totalHits;
+    }
+
+    private float totalShots;
+    private float totalHits;
 
     public int getTotalDeaths() {
         return totalDeaths;
     }
 
     private int totalDeaths;
-   static HashMap<String, String> TempStats = new HashMap<>();
+    static HashMap<String, String> TempStats = new HashMap<>();
 
 
 
@@ -120,11 +137,11 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
         this.realname = realname;
     }
 
-    public Locale getNationality() {
+    public String getNationality() {
         return nationality;
     }
 
-    public void setNationality(Locale nationality) {
+    public void setNationality(String nationality) {
         this.nationality = nationality;
     }
 
@@ -136,7 +153,7 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
         this.steamUrl = steamUrl;
     }
 
-    private Locale nationality;
+    private String nationality;
     private String steamUrl;
     private long totalTimePlayed;
     private static HashMap<String, String> tempPlayerStats = new HashMap<>();
@@ -147,8 +164,6 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
     private int totalDamageDone;
     private int totalMoneyEarned;
     private int totalHeadshots;
-
-
 
 
     //WeaponStats
@@ -174,8 +189,6 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
 
 
     private static HashMap<String, String> friendlist = new HashMap<>();
-
-
 
 
     //Steam profile info
@@ -212,367 +225,313 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
     }*/
 
 
-  /*  private Map<String, String> getAllPlayerFriendsApi(String steamId) {
+    /*  private Map<String, String> getAllPlayerFriendsApi(String steamId) {
 
 
-        SteamAPI getPlayerFriendsAsync = (SteamAPI) new SteamAPI(new SteamAPI.AsyncResponse() {
-            //MainPlayer mPlayer=new MainPlayer();
+          SteamAPI getPlayerFriendsAsync = (SteamAPI) new SteamAPI(new SteamAPI.AsyncResponse() {
+              //MainPlayer mPlayer=new MainPlayer();
 
-            @Override
-            public void processFinish(Map output) {
-                tempPlayerFriends = output;
-                // Mplayer.setTotalKills((Integer)output.get("total_kills"));
-                // Log.w("TEST", Integer.toString(Mplayer.getTotalKills()));
-                //Log.w("TEST", Integer.toString(output) );
+              @Override
+              public void processFinish(Map output) {
+                  tempPlayerFriends = output;
+                  // Mplayer.setTotalKills((Integer)output.get("total_kills"));
+                  // Log.w("TEST", Integer.toString(Mplayer.getTotalKills()));
+                  //Log.w("TEST", Integer.toString(output) );
 
-            }
-        }).execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId + "&relationship=friend", "getFriendsInfo");
-        return tempPlayerFriends;
+              }
+          }).execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId + "&relationship=friend", "getFriendsInfo");
+          return tempPlayerFriends;
 
-    }*/
-    public  void getStats(String steamId)
-    {
+      }*/
+    public void getStats(String steamId) {
         API.execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId, "getPlayerStats");
 
 
     }
-    public  void getFriends(String steamId)
-    {
-        API.execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid="+ steamId +"&relationship=friend" , "getPlayerFriends");
+
+    public void getFriends(String steamId) {
+        API.execute("http://api.steampowered.com/ISteamUser/GetFriendList/v0001/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=" + steamId + "&relationship=friend", "getPlayerFriends");
 
     }
-    public  void getPlayerInfo(String steamId)
-    {
+
+    public void getPlayerInfo(String steamId) {
         API.execute("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamids=" + steamId, "getPlayerInfo");
     }
 
-    public void init(String steamId,int level)
-    {
+    public void init(String steamId, int level) {
         MainPlayerSteamId = steamId;
-        switch (level)
-        {
-            case 1 :getStats(steamId);
-            break;
-            case 2:getPlayerInfo(steamId);
-            break;
-            case 3:getFriends(steamId);
-            break;
+        switch (level) {
+            case 1:
+                getStats(steamId);
+                break;
+            case 2:
+                getPlayerInfo(steamId);
+                break;
+            case 3:
+                getFriends(steamId);
+                break;
 
         }
 
 
-       // getFriends(steamId);
+        // getFriends(steamId);
        /* for (int i=0;i<friendList.size();i++)
         {
             getFriendStats(friendList.get(i).toString(),0);
         }*/
     }
 
-    public Player(String steamId,RequestFinished activityContext) {
+    public Player(String steamId, RequestFinished activityContext) {
         Log.w("TEST", "Start Creating Player");
-        requestFinished=activityContext;
-       init(steamId,1);
+        requestFinished = activityContext;
+        init(steamId, 1);
 
 
     }
 
 
+    public float getAccuracy() {
+        return accuracy;
+    }
+
+    public void setAccuracy(float accuracy) {
+        this.accuracy = accuracy;
+    }
+
+    public float getHeadshotPercentage() {
+        return headshotPercentage;
+    }
+
+    public void setHeadshotPercentage(float headshotPercentage) {
+        this.headshotPercentage = headshotPercentage;
+    }
 
     public Player() {
+    
+    }
+
+    public Player(String n) {
         //this.friendStats = friendStats;
         //this.friendInfo = friendInfo;
-       // this.friendList = ;
-       if (tempPlayerInfo.containsKey("personaname"))
-       {
-           this.playerName = tempPlayerInfo.get("personaname");
+        // this.friendList = ;
+        if (tempPlayerInfo.containsKey("personaname")) {
+            this.playerName = tempPlayerInfo.get("personaname");
 
-       }
-       else
-       {
-           this.playerName = "Data Not Available";
-       }
-        if (tempPlayerStats.containsKey("total_time_played"))
-        {
-            this.totalTimePlayed =Integer.parseInt(tempPlayerStats.get("total_time_played"));
+        } else {
+            this.playerName = "Data Not Available";
         }
-        else
-        {
+        if (tempPlayerStats.containsKey("total_time_played")) {
+            this.totalTimePlayed = Integer.parseInt(tempPlayerStats.get("total_time_played"));
+        } else {
             this.totalTimePlayed = -1;
         }
-        if (tempPlayerInfo.containsKey("profileurl"))
-        {
-            this.steamUrl=tempPlayerInfo.get("profileurl");
-        }
-        else
-        {
-            this.steamUrl="Data Not Available";
+        if (tempPlayerInfo.containsKey("profileurl")) {
+            this.steamUrl = tempPlayerInfo.get("profileurl");
+        } else {
+            this.steamUrl = "Data Not Available";
         }
         this.SteamId = tempPlayerInfo.get("steamid");
 
-        if (tempPlayerInfo.containsKey("relname"))
-        {
-            this.realname=tempPlayerInfo.get("realname");
+        if (tempPlayerInfo.containsKey("realname")) {
+            this.realname = tempPlayerInfo.get("realname");
+        } else {
+            this.realname = "";
         }
-        else
-        {
-            this.realname="Data Not Available";
-        }
-        if (tempPlayerInfo.containsKey("loccountrycode"))
-        {
-            this.nationality=new Locale("",tempPlayerInfo.get("loccountrycode"));
+        if (tempPlayerInfo.containsKey("loccountrycode")) {
+            this.nationality = new Locale("", tempPlayerInfo.get("loccountrycode")).getCountry();
 
         }
-        if (tempPlayerStats.containsKey("total_kills"))
-        {
+        if (tempPlayerStats.containsKey("total_kills")) {
             this.totalKills = Integer.parseInt(tempPlayerStats.get("total_kills"));
 
+        } else {
+            this.totalKills = -1;
         }
-        else
-        {
-            this.totalKills=-1;
-        }
-        if (tempPlayerStats.containsKey("total_wins_pistolround"))
-        {
+        if (tempPlayerStats.containsKey("total_wins_pistolround")) {
             this.totalWinsPistolRound = Integer.parseInt(tempPlayerStats.get("total_wins_pistolround"));
+        } else {
+            this.totalWinsPistolRound = -1;
         }
-        else
-        {
-            this.totalWinsPistolRound=-1;
-        }
-        if (tempPlayerStats.containsKey("total_shots_fired"))
-        {
+        if (tempPlayerStats.containsKey("total_shots_fired")) {
             this.totalShots = Integer.parseInt(tempPlayerStats.get("total_shots_fired"));
 
+        } else {
+            this.totalShots = -1;
         }
-        else
-        {
-            this.totalShots=-1;
-        }
-        if (tempPlayerStats.containsKey("total_shots_hit"))
-        {
+        if (tempPlayerStats.containsKey("total_shots_hit")) {
             this.totalHits = Integer.parseInt(tempPlayerStats.get("total_shots_hit"));
 
+        } else {
+            this.totalHits = -1;
         }
-        else
-        {
-            this.totalHits=-1;
-        }
-        if (tempPlayerStats.containsKey("total_deaths"))
-        {
+        if (tempPlayerStats.containsKey("total_deaths")) {
             this.totalDeaths = Integer.parseInt(tempPlayerStats.get("total_deaths"));
 
+        } else {
+            this.totalDeaths = -1;
         }
-        else
-        {
-            this.totalDeaths=-1;
-        }
-        if (tempPlayerInfo.containsKey("avatarfull"))
-        {
+        if (tempPlayerInfo.containsKey("avatarfull")) {
             this.profilePicture_large = tempPlayerInfo.get("avatarfull");
 
+        } else {
+            this.profilePicture_large = "Data Not Available";
         }
-        else
-        {
-            this.profilePicture_large="Data Not Available";
-        }
-        if (tempPlayerInfo.containsKey("avatarmedium"))
-        {
+        if (tempPlayerInfo.containsKey("avatarmedium")) {
             this.profilePicture_medium = tempPlayerInfo.get("avatarmedium");
 
+        } else {
+            this.profilePicture_medium = "Data Not Available";
         }
-        else
-        {
-            this.profilePicture_medium="Data Not Available";
-        }
-        if (tempPlayerInfo.containsKey("avatar"))
-        {
+        if (tempPlayerInfo.containsKey("avatar")) {
             this.profilePicture_small = tempPlayerInfo.get("avatar");
 
+        } else {
+            this.profilePicture_small = "Data Not Available";
         }
-        else
-        {
-            this.profilePicture_small="Data Not Available";
-        }
-        if (tempPlayerStats.containsKey("total_planted_bombs"))
-        {
+        if (tempPlayerStats.containsKey("total_planted_bombs")) {
             this.totalBomPlants = Integer.parseInt(tempPlayerStats.get("total_planted_bombs"));
 
+        } else {
+            this.totalBomPlants = -1;
         }
-        else
-        {
-          this.totalBomPlants=-1;
-        }
-        if (tempPlayerStats.containsKey("total_defused_bombs"))
-        {
+        if (tempPlayerStats.containsKey("total_defused_bombs")) {
             this.totalBomDefuses = Integer.parseInt(tempPlayerStats.get("total_defused_bombs"));
 
+        } else {
+            this.totalBomDefuses = -1;
         }
-        else
-        {
-            this.totalBomDefuses=-1;
-        }
-        if (tempPlayerStats.containsKey("total_damage_done"))
-        {
+        if (tempPlayerStats.containsKey("total_damage_done")) {
             this.totalDamageDone = Integer.parseInt(tempPlayerStats.get("total_damage_done"));
 
+        } else {
+            this.totalDamageDone = -1;
         }
-        else
-        {
-            this.totalDamageDone=-1;
-        }
-        if (tempPlayerStats.containsKey("total_money_earned"))
-        {
-            this.totalMoneyEarned =  Integer.parseInt(tempPlayerStats.get("total_money_earned"));
+        if (tempPlayerStats.containsKey("total_money_earned")) {
+            this.totalMoneyEarned = Integer.parseInt(tempPlayerStats.get("total_money_earned"));
 
+        } else {
+            this.totalMoneyEarned = -1;
         }
-        else
-        {
-            this.totalMoneyEarned=-1;
-        }
-        if (tempPlayerStats.containsKey("total_kills_headshot"))
-        {
+        if (tempPlayerStats.containsKey("total_kills_headshot")) {
             this.totalHeadshots = Integer.parseInt(tempPlayerStats.get("total_kills_headshot"));
 
+        } else {
+            this.totalHeadshots = -1;
         }
-        else
-        {
-            this.totalHeadshots=-1;
-        }
-        for (int i=0;i<weaponsArr.length;i++)
-        {
-            if (tempPlayerStats.containsKey("total_kills_"+weaponsArr[i]))
-            {
-                weaponKills.put(weaponsArr[i].toString(),Integer.parseInt(tempPlayerStats.get("total_kills_"+weaponsArr[i])));
+        for (int i = 0; i < weaponsArr.length; i++) {
+            if (tempPlayerStats.containsKey("total_kills_" + weaponsArr[i])) {
+                weaponKills.put(weaponsArr[i].toString(), Integer.parseInt(tempPlayerStats.get("total_kills_" + weaponsArr[i])));
 
-            }
-            else
-            {
-                weaponKills.put(weaponsArr[i].toString(),-1);
+            } else {
+                weaponKills.put(weaponsArr[i].toString(), -1);
             }
         }
-        for (int i=0;i<specialWeaponsArr.length;i++)
-        {
-            if (tempPlayerStats.containsKey("total_kills_"+specialWeaponsArr[i]))
-            {
-                weaponKills.put(specialWeaponsArr[i].toString(),Integer.parseInt(tempPlayerStats.get("total_kills_"+specialWeaponsArr[i])));
+        for (int i = 0; i < specialWeaponsArr.length; i++) {
+            if (tempPlayerStats.containsKey("total_kills_" + specialWeaponsArr[i])) {
+                weaponKills.put(specialWeaponsArr[i].toString(), Integer.parseInt(tempPlayerStats.get("total_kills_" + specialWeaponsArr[i])));
 
-            }
-            else
-            {
-                weaponKills.put(specialWeaponsArr[i].toString(),-1);
+            } else {
+                weaponKills.put(specialWeaponsArr[i].toString(), -1);
 
             }
         }
-        for (int i=0;i<weaponsArr.length;i++) {
-            if (tempPlayerStats.containsKey("total_shots_" + weaponsArr[i]))
-            {
-                this.weaponShots.put(weaponsArr[i],Integer.parseInt(tempPlayerStats.get("total_shots_" + weaponsArr[i])));
+        for (int i = 0; i < weaponsArr.length; i++) {
+            if (tempPlayerStats.containsKey("total_shots_" + weaponsArr[i])) {
+                this.weaponShots.put(weaponsArr[i], Integer.parseInt(tempPlayerStats.get("total_shots_" + weaponsArr[i])));
 
-            }
-            else
-            {
-                this.weaponShots.put(weaponsArr[i],-1);
+            } else {
+                this.weaponShots.put(weaponsArr[i], -1);
 
             }
         }
-        if (tempPlayerStats.containsKey("total_shots_taser"))
-        {
-            this.weaponShots.put("taser",Integer.parseInt(tempPlayerStats.get("total_shots_taser")));
+        if (tempPlayerStats.containsKey("total_shots_taser")) {
+            this.weaponShots.put("taser", Integer.parseInt(tempPlayerStats.get("total_shots_taser")));
 
-        }
-        else
-        {
-            this.weaponShots.put("taser",-1);
+        } else {
+            this.weaponShots.put("taser", -1);
 
         }
 
 
-        for (int i=0;i<weaponsArr.length;i++) {
-            if (tempPlayerStats.containsKey("total_hits_"+weaponsArr[i]))
-            {
-                this.weaponHits.put(weaponsArr[i],Integer.parseInt(tempPlayerStats.get("total_hits_"+weaponsArr[i])));
+        for (int i = 0; i < weaponsArr.length; i++) {
+            if (tempPlayerStats.containsKey("total_hits_" + weaponsArr[i])) {
+                this.weaponHits.put(weaponsArr[i], Integer.parseInt(tempPlayerStats.get("total_hits_" + weaponsArr[i])));
 
-            }
-            else
-            {
-                this.weaponHits.put(weaponsArr[i],-1);
+            } else {
+                this.weaponHits.put(weaponsArr[i], -1);
 
             }
         }
-        for (int i=0;i<weaponsArr.length;i++)
-        {
-            if (weaponShots.get(weaponsArr[i])!=-1 && weaponHits.get(weaponsArr[i])!=-1)
-            {
-                this.weaponAccuracy.put(weaponsArr[i],weaponShots.get(weaponsArr[i])/weaponHits.get(weaponsArr[i]));
+        for (int i = 0; i < weaponsArr.length; i++) {
+            if (weaponShots.get(weaponsArr[i]) != -1 && weaponHits.get(weaponsArr[i]) != -1) {
+                this.weaponAccuracy.put(weaponsArr[i], weaponShots.get(weaponsArr[i]) / weaponHits.get(weaponsArr[i]));
 
-            }
-            else
-            {
-                this.weaponAccuracy.put(weaponsArr[i],-1);
+            } else {
+                this.weaponAccuracy.put(weaponsArr[i], -1);
             }
 
 
         }
 
-       // this.mapRounds = mapRounds;
+        // this.mapRounds = mapRounds;
         //this.mapWins = mapWins;
-        if (tempPlayerStats.containsKey("last_match_t_wins"))
-        {
+        if (tempPlayerStats.containsKey("last_match_t_wins")) {
             this.lastMatchTwins = Integer.parseInt(tempPlayerStats.get("last_match_t_wins"));
 
+        } else {
+            this.lastMatchTwins = -1;
         }
-        else
-        {
-            this.lastMatchTwins=-1;
-        }
-        if (tempPlayerStats.containsKey("last_match_ct_wins"))
-        {
+        if (tempPlayerStats.containsKey("last_match_ct_wins")) {
             this.lastMatchCTWins = Integer.parseInt(tempPlayerStats.get("last_match_ct_wins"));
 
+        } else {
+            this.lastMatchCTWins = -1;
         }
-        else
-        {
-            this.lastMatchCTWins=-1;
-        }
-        if (tempPlayerStats.containsKey("last_match_wins"))
-        {
+        if (tempPlayerStats.containsKey("last_match_wins")) {
             this.lastMatchWins = Integer.parseInt(tempPlayerStats.get("last_match_wins"));
 
+        } else {
+            this.lastMatchWins = -1;
         }
-        else
-        {
-            this.lastMatchWins=-1;
-        }
-        if (tempPlayerStats.containsKey("last_match_kills"))
-        {
+        if (tempPlayerStats.containsKey("last_match_kills")) {
             this.lastMatchKills = Integer.parseInt(tempPlayerStats.get("last_match_kills"));
 
+        } else {
+            this.lastMatchKills = -1;
         }
-        else
-        {
-            this.lastMatchKills =-1;
-        }
-        if (tempPlayerStats.containsKey("last_match_deaths"))
-        {
+        if (tempPlayerStats.containsKey("last_match_deaths")) {
             this.lastMatchDeaths = Integer.parseInt(tempPlayerStats.get("last_match_deaths"));
 
+        } else {
+            this.lastMatchDeaths = -1;
         }
-        else
-        {
-            this.lastMatchDeaths=-1;
-        }
-        if (getTotalKills()!=-1 && getTotalDeaths()!=-1)
-        {
-            this.killDeath = this.getTotalKills()/this.getTotalDeaths();
+        if (getTotalKills() != -1 && getTotalDeaths() != -1) {
+            this.killDeath = this.getTotalKills() / this.getTotalDeaths();
 
-        }
-        else
-        {
-            this.killDeath=-1;
+        } else {
+            this.killDeath = -1;
         }
 
-
-
+        if (tempPlayerStats.containsKey("total_shots_hit")) {
+            this.totalHits = Integer.parseInt(tempPlayerStats.get("total_shots_hit"));
+        } else {
+            this.totalHits = -1;
+        }
+        if (tempPlayerStats.containsKey("total_shots_fired")) {
+            this.totalShots = Integer.parseInt(tempPlayerStats.get("total_shots_fired"));
+        } else {
+            this.totalHits = -1;
+        }
+        if (getTotalShots() != -1 && getTotalHits() != -1) {
+            this.accuracy = (getTotalHits() / getTotalShots()) * 100;
+        } else {
+            this.totalHits = -1;
+        }
+        if (getTotalKills() != -1 && getTotalHeadshots() != -1) {
+            this.headshotPercentage = (getTotalHeadshots() / getTotalKills()) * 100;
+        } else {
+            this.headshotPercentage = -1;
+        }
        /* this.lastMatchFavWeapon = lastMatchFavWeapon;
         this.lastMatchFavWeaponShots = lastMatchFavWeaponShots;
         this.lastMatchFavWeaponHits = lastMatchFavWeaponHits;
@@ -745,48 +704,43 @@ public class Player extends SugarRecord<Player>implements AsyncResponse,Serializ
     public void setLastMatchMoneySpent(int lastMatchMoneySpent) {
         this.lastMatchMoneySpent = lastMatchMoneySpent;
     }
-    public Player(int i)
-    {
+
+    public Player(int i) {
 
     }
 
 
     @Override
     public void onTaskCompleted(HashMap<String, String> response) {
-        Player temp=new Player(1);
+        Player temp = new Player(1);
 
 
-        if (response.get("Type")=="PlayerStats") {
+        if (response.get("Type") == "PlayerStats") {
             Log.w("TEST", "OnTaskCompletedPlayer");
             tempPlayerStats = response;
             //Player();
-            Log.w("TEST", tempPlayerStats.get("total_kills"));
 
-            temp.init(MainPlayerSteamId,2);
 
-        } else if (response.get("Type")=="Friendlist") {
-            friendList=response;
+            temp.init(MainPlayerSteamId, 2);
+
+        } else if (response.get("Type") == "Friendlist") {
+            friendList = response;
             requestFinished.onTaskCompleted();
 
-        }
-        else if(response.get("Type")=="PlayerInfo")
-        {
+        } else if (response.get("Type") == "PlayerInfo") {
 
-            tempPlayerInfo=response;
-            temp.init(MainPlayerSteamId,3);
+            tempPlayerInfo = response;
+            temp.init(MainPlayerSteamId, 3);
 
 
-        }
-        else
-        {
+        } else {
             Log.w("TEST", "ERROR");
         }
-     //   Intent intent = new Intent(this,
-       // startActivity(intent);
+        //   Intent intent = new Intent(this,
+        // startActivity(intent);
         //Hier moet ik de naar de splash page sturen dat alles geladen is
 
     }
-
 
 
 }

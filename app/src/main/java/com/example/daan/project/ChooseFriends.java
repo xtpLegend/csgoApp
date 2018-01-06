@@ -17,7 +17,7 @@ public class ChooseFriends extends Activity {
     ArrayList dataModels;
     ListView listView;
 
-   FriendListAdapter adapter;
+   FriendListWithCheckboxAdapter adapter;
     SharedPreferences dataSave;
 
     @Override
@@ -28,20 +28,21 @@ public class ChooseFriends extends Activity {
         final Button btn = (Button) findViewById(R.id.btnSave);
         ArrayList<String> playerList = new ArrayList<>();
         ArrayList<String> id = new ArrayList<>();
-
+        ArrayList<Friend> test=Friend.tempFriendlist;
         for (int i=0;i<Friend.tempFriendlist.size();i++)
         {
             playerList.add(Friend.tempFriendlist.get(i).getPlayerName());
             id.add(Friend.tempFriendlist.get(i).getSteamId());
 
         }
-        adapter =new FriendListAdapter(playerList,id,getApplicationContext());
+        adapter =new FriendListWithCheckboxAdapter(playerList,id,getApplicationContext());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView parent, View view, int position, long id) {
 
               //  String dataModel= dataModels.get(position);
+
                 adapter.changeChecked(position);
 
                 adapter.notifyDataSetChanged();

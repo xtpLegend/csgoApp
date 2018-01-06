@@ -1,6 +1,7 @@
 package com.example.daan.project;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,17 +22,27 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AsyncResponse, Stats.OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AsyncResponse, Stats.OnFragmentInteractionListener,FriendListFragment.OnHeadlineSelectedListener {
 
-
+    Player mainPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Player mainPlayer = new Player();
-        Stats t = Stats.newInstance(mainPlayer);
+        if (SplashActivity.networkStatus){
+             mainPlayer = new Player("player");
+        }
+        else
+        {
+             mainPlayer = Player.findById(Player.class, (long) 1);
+        }
+        Stats t = Stats.newInstance(mainPlayer.getSteamId());
+
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -58,8 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         // AsyncTask task = new SteamAPI().execute("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=76561198129798218");
         Intent intent = getIntent();
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.flContent, t).commit();
+
 
         //Map<String,String> test2= test.doInBackground("http://api.steampowered.com/ISteamUserStats/GetUserStatsForGame/v0002/?appid=730&key=C8E2FB316FEBD12C2CD17BB2B06CDE14&steamid=","getPlayerStats");
 
@@ -89,8 +100,71 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         //Log.w("TEST", Integer.toString(mPlayer.getTotalKills()));
         //C8E2FB316FEBD12C2CD17BB2B06CDE14
+        TextView view = (TextView) findViewById(R.id.hidden);
+        String tag = view.getTag().toString();
+
+        if (tag.equals("large")) {
+            Player mp = mainPlayer;
+            Stats s = Stats.newInstance(mp.getSteamId());
+            FriendListFragment f = new FriendListFragment();
+            FragmentManager fm = getSupportFragmentManager();
+            fm.beginTransaction().replace(R.id.flContent1, s).commit();
+            // ft.beginTransaction().replace(R.id.flContent2, s).commit();
+            Log.w("TEST", "onNavigationItemSelected: " );
+        }
+        else if (tag.equals("normal"))
+        {
+          Player p = mainPlayer;
+         Stats s = Stats.newInstance(p.getSteamId());
+          FragmentManager ft = getSupportFragmentManager();
+           ft.beginTransaction().replace(R.id.flContent, s).commit();
+        }
 
 
+    }
+
+    @Override
+    public void onArticleSelected(int position, String steamid) {
+        // The user selected the headline of an article from the HeadlinesFragment
+
+        // Capture the article fragment from the activity layout
+        Stats stats = (Stats)
+                getSupportFragmentManager().findFragmentById(R.id.fragmentFriend);
+
+        if (stats != null) {
+            // If article frag is available, we're in two-pane layout...
+
+            // Call a method in the ArticleFragment to update its content
+            stats.updateStatsView(position);
+
+        } else {
+            // If the frag is not available, we're in the one-pane layout and must swap frags...
+
+            // Create fragment and give it an argument for the selected article
+            Stats newFragment = Stats.newInstance(steamid);
+            Bundle args = new Bundle();
+            args.putInt(Stats.ARG_POSITION, position);
+            newFragment.setArguments(args);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            // Replace whatever is in the fragment_container view with this fragment,
+            // and add the transaction to the back stack so the user can navigate back
+            TextView view = (TextView) findViewById(R.id.hidden);
+            String tag = view.getTag().toString();
+            if (tag.equals("large"))
+            {
+                transaction.replace(R.id.flContent2, newFragment);
+                transaction.addToBackStack(null);
+            }
+            else if (tag.equals("normal"))
+            {
+                transaction.replace(R.id.flContent, newFragment);
+                transaction.addToBackStack(null);
+            }
+
+            // Commit the transaction
+            transaction.commit();
+        }
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -159,25 +233,70 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        FriendItemFragment fragment = null;
-        Class fragmentClass;
+
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        TextView view = (TextView) findViewById(R.id.hidden);
         if (id == R.id.nav_stats) {
             Log.w("TEST", "Drawer : Stats");
             // Handle the camera action
         } else if (id == R.id.nav_friends) {
-            if (findViewById(R.id.flContent) != null) {
-                FriendItemFragment t= new FriendItemFragment();
+            FriendListFragment fragment = new FriendListFragment();
+            String tag = view.getTag().toString();
+            Log.w("TEST", "Drawer : Live");
 
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.replace(R.id.flContent, t);
-                ft.commit();
+
+            if (tag.equals("large")) {
+                SharedPreferences pref = getSharedPreferences("Friends",MODE_PRIVATE);
+                ArrayList<String> nameList = new ArrayList<>();
+                HashMap<String,String> list = new HashMap<>();
+                Set<String> t= pref.getStringSet("Friends",null);
+                for (int i=0;i<t.size();i++)
+                {
+
+                    for (int a=0;a<Friend.tempFriendlist.size();a++)
+                    {
+                        if (Friend.tempFriendlist.get(a).getSteamId().toString().equals(t.toArray()[i].toString()))
+                        {
+                            nameList.add(Friend.tempFriendlist.get(a).getPlayerName());
+                            list.put(Friend.tempFriendlist.get(a).getPlayerName(),t.toArray()[i].toString());
+                        }
+                    }
+
+                }
+
+                Player p = new Player("player");
+                Stats s = Stats.newInstance(Friend.tempFriendlist.get(0).getSteamId());
+                FriendListFragment f = FriendListFragment.init(nameList,list);
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentManager fm2 = getSupportFragmentManager();
+                fm.beginTransaction().replace(R.id.flContent1, f).commit();
+                fm2.beginTransaction().replace(R.id.flContent2, s).commit();
+                Log.w("TEST", "onNavigationItemSelected: " );
             }
+            else if (tag.equals("normal"))
+            {
+                SharedPreferences pref = getSharedPreferences("Friends",MODE_PRIVATE);
+                ArrayList<String> nameList = new ArrayList<>();
+                HashMap<String,String> list = new HashMap<>();
+                Set<String> t= pref.getStringSet("Friends",null);
+                for (int i=0;i<t.size();i++)
+                {
+                    nameList.add(Friend.tempFriendlist.get(i).getPlayerName());
+                    list.put(Friend.tempFriendlist.get(i).getPlayerName(),t.toArray()[i].toString());
+
+
+                }
+
+                FriendListFragment f2 = FriendListFragment.init(nameList,list);
+                FragmentManager ft = getSupportFragmentManager();
+                ft.beginTransaction().replace(R.id.flContent, f2).commit();
+            }
+
+
+
 
         } else if (id == R.id.nav_live) {
             Log.w("TEST", "Drawer : Live");
@@ -234,12 +353,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void onFriendSelected(int position) {
+  /*  public void onFriendSelected(int position) {
         // The user selected the headline of an article from the HeadlinesFragment
 
         // Capture the article fragment from the activity layout
         Stats statsfrag = (Stats)
-                getSupportFragmentManager().findFragmentById(R.id.statsFragment);
+                getSupportFragmentManager().findFragmentById(R.id.);
 
         if (statsfrag != null) {
             // If article frag is available, we're in two-pane layout...
@@ -265,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // Commit the transaction
             transaction.commit();
         }
-    }
+    }*/
 
 }
 

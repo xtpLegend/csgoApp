@@ -51,6 +51,8 @@
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
+        <meta-data android:name="daan" android:value="com.exemple.daan.project" />
+
     </application>
 
 </manifest>

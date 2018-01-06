@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * Created by daan on 02.01.18.
  */
 
-public class FriendListAdapter extends ArrayAdapter {
+public class FriendListWithCheckboxAdapter extends ArrayAdapter {
     private ArrayList<String> dataSet= new ArrayList<>();
     private ArrayList<Boolean> checkedBox= new ArrayList<>();
 
@@ -28,8 +28,8 @@ public class FriendListAdapter extends ArrayAdapter {
         CheckBox checkBox;
     }
 
-    public FriendListAdapter(ArrayList data,ArrayList id, Context context) {
-        super(context, R.layout.fragment_friend_item, data);
+    public FriendListWithCheckboxAdapter(ArrayList data, ArrayList id, Context context) {
+        super(context, R.layout.friend_list_item, data);
         this.dataSet = data;
         this.mContext = context;
         for(int i=0;i<dataSet.size();i++)
