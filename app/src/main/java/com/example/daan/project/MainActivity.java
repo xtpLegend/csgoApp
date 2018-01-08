@@ -215,11 +215,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView view = (TextView) findViewById(R.id.hidden);
         if (id == R.id.nav_stats) {
             Log.w("TEST", "Drawer : Stats");
+            Intent intent=new Intent(this,MainActivity.class);
+            startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_friends) {
             FriendListFragment fragment = new FriendListFragment();
             String tag = view.getTag().toString();
-            Log.w("TEST", "Drawer : Live");
+
 
 
             if (tag.equals("large")) {
@@ -258,8 +260,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Set<String> t= pref.getStringSet("Friends",null);
                 for (int i=0;i<t.size();i++)
                 {
-                    nameList.add(Friend.tempFriendlist.get(i).getPlayerName());
-                    list.put(Friend.tempFriendlist.get(i).getPlayerName(),t.toArray()[i].toString());
+
+                    for (int a=1;a<Friend.tempFriendlist.size();a++)
+                    {
+                        if (Friend.tempFriendlist.get(a).getSteamId().equals(t.toArray()[i].toString()))
+                        {
+                            nameList.add(Friend.tempFriendlist.get(a).getPlayerName());
+                            list.put(Friend.tempFriendlist.get(a).getPlayerName(),t.toArray()[i].toString());
+
+                        }
+
+                    }
 
 
                 }

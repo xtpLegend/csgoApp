@@ -71,9 +71,9 @@ public class FriendListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
+
         String steamid = list.get(nameList.get(position));
         mCallback.onArticleSelected(position,steamid);
-
         // Set the item as checked to be highlighted when in two-pane layout
         getListView().setItemChecked(position, true);
     }
