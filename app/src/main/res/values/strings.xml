@@ -6,6 +6,11 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="choose_friends">Choose friends to save</string>
+
+    <string name="enter_steamid">Please, insert your steamid</string>
+    <string name="no_internet">This feature is not available in offline mode</string>
+    <string name="not_yet_implemented">This feature is not available in the current build</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

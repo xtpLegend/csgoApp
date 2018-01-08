@@ -3,6 +3,7 @@ package com.example.daan.project;
 import android.util.Log;
 
 import com.orm.SugarRecord;
+import com.orm.dsl.Ignore;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -14,23 +15,29 @@ import java.util.Locale;
 
 public class Player extends SugarRecord<Player> implements AsyncResponse, Serializable {
     private static RequestFinished requestFinished;
+    @Ignore
     private String[] weaponsArr = {"glock", "deagle", "elite", "fiveseven",
             "xm1014", "mac10", "ump45", "p90", "awp", "ak47", "aug", "famas", "g3sg1", "m249", "hkp2000", "p250",
             "sg556", "scar20", "mp7", "mp9", "nova", "negev", "sawedoff", "bizon", "tec9", "mag7", "m4a1", "galilar"};
+    @Ignore
     private String[] specialWeaponsArr = {"knife", "hegrenade", "molotov", "taser"};
+    @Ignore
     private String[] mapsArr = {"cs_office", "de_cbble", "de_dust2", "de_dust", "de_inferno", "de_nuke",
             "de_train", "de_lake", "de_safehouse", "de_stmarc", "de_bank", "de_shorttrain", "ar_shoots", "ar_baggage", "ar_monastery"};
     public static String MainPlayerSteamId;
     public float accuracy;
+    @Ignore
     private static HashMap<Integer, Player> friendStats = new HashMap<>();
+    @Ignore
     private HashMap<String, HashMap<String, String>> friendInfo = new HashMap<>();
-
+    @Ignore
     public HashMap<String, String> getFriendList() {
         return friendList;
     }
-
+    @Ignore
     private static HashMap<String, String> friendList = new HashMap<>();
     //Global stats
+    @Ignore
     private SteamAPI API = new SteamAPI(this);
 
     public String getPlayerName() {
@@ -76,6 +83,7 @@ public class Player extends SugarRecord<Player> implements AsyncResponse, Serial
     }
 
     private int totalDeaths;
+    @Ignore
     static HashMap<String, String> TempStats = new HashMap<>();
 
 
@@ -165,14 +173,26 @@ public class Player extends SugarRecord<Player> implements AsyncResponse, Serial
     private int totalMoneyEarned;
     private int totalHeadshots;
 
+    public HashMap<String, Integer> getWeaponKills() {
+        return weaponKills;
+    }
 
+    public void setWeaponKills(HashMap<String, Integer> weaponKills) {
+        this.weaponKills = weaponKills;
+    }
+
+    @Ignore
     //WeaponStats
     private HashMap<String, Integer> weaponKills = new HashMap<>();
-
+    @Ignore
     private HashMap<String, Integer> weaponAccuracy = new HashMap<>();
+    @Ignore
     private HashMap<String, Integer> weaponShots = new HashMap<>();
+    @Ignore
     private HashMap<String, Integer> weaponHits = new HashMap<>();
+    @Ignore
     private HashMap<String, Integer> mapRounds = new HashMap<>();
+    @Ignore
     private HashMap<String, Integer> mapWins = new HashMap<>();
     //lastMtachStats
     private int lastMatchTwins;

@@ -18,28 +18,31 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AsyncResponse, Stats.OnFragmentInteractionListener,FriendListFragment.OnHeadlineSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AsyncResponse, Stats.OnFragmentInteractionListener, FriendListFragment.OnHeadlineSelectedListener {
 
     Player mainPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (SplashActivity.networkStatus){
-             mainPlayer = new Player("player");
-        }
-        else
-        {
-             mainPlayer = Player.findById(Player.class, (long) 1);
+        if (SplashActivity.networkStatus) {
+            mainPlayer = new Player("player");
+            mainPlayer.save();
+
+        } else {
+            mainPlayer = Player.findById(Player.class, (long) 1);
         }
         Stats t = Stats.newInstance(mainPlayer.getSteamId());
 
@@ -93,8 +96,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-
-
         //Log.w("TEST", Integer.toString(mPlayer.getTotalKills()));
         //C8E2FB316FEBD12C2CD17BB2B06CDE14
         TextView view = (TextView) findViewById(R.id.hidden);
@@ -107,14 +108,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             FragmentManager fm = getSupportFragmentManager();
             fm.beginTransaction().replace(R.id.flContent1, s).commit();
             // ft.beginTransaction().replace(R.id.flContent2, s).commit();
-            Log.w("TEST", "onNavigationItemSelected: " );
-        }
-        else if (tag.equals("normal"))
-        {
-          Player p = mainPlayer;
-         Stats s = Stats.newInstance(p.getSteamId());
-          FragmentManager ft = getSupportFragmentManager();
-           ft.beginTransaction().replace(R.id.flContent, s).commit();
+            Log.w("TEST", "onNavigationItemSelected: ");
+        } else if (tag.equals("normal")) {
+            Player p = mainPlayer;
+            Stats s = Stats.newInstance(p.getSteamId());
+            FragmentManager ft = getSupportFragmentManager();
+            ft.beginTransaction().replace(R.id.flContent, s).commit();
         }
 
 
@@ -148,13 +147,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             // and add the transaction to the back stack so the user can navigate back
             TextView view = (TextView) findViewById(R.id.hidden);
             String tag = view.getTag().toString();
-            if (tag.equals("large"))
-            {
+            if (tag.equals("large")) {
                 transaction.replace(R.id.flContent2, newFragment);
                 transaction.addToBackStack(null);
-            }
-            else if (tag.equals("normal"))
-            {
+            } else if (tag.equals("normal")) {
                 transaction.replace(R.id.flContent, newFragment);
                 transaction.addToBackStack(null);
             }
@@ -163,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             transaction.commit();
         }
     }
-
 
 
     @Override
@@ -215,105 +210,108 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         TextView view = (TextView) findViewById(R.id.hidden);
         if (id == R.id.nav_stats) {
             Log.w("TEST", "Drawer : Stats");
-            Intent intent=new Intent(this,MainActivity.class);
+            Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             // Handle the camera action
         } else if (id == R.id.nav_friends) {
-            FriendListFragment fragment = new FriendListFragment();
-            String tag = view.getTag().toString();
+            if (SplashActivity.networkStatus) {
 
 
+                FriendListFragment fragment = new FriendListFragment();
+                String tag = view.getTag().toString();
 
-            if (tag.equals("large")) {
-                SharedPreferences pref = getSharedPreferences("Friends",MODE_PRIVATE);
-                ArrayList<String> nameList = new ArrayList<>();
-                HashMap<String,String> list = new HashMap<>();
-                Set<String> t= pref.getStringSet("Friends",null);
-                for (int i=0;i<t.size();i++)
-                {
 
-                    for (int a=0;a<Friend.tempFriendlist.size();a++)
-                    {
-                        if (Friend.tempFriendlist.get(a).getSteamId().toString().equals(t.toArray()[i].toString()))
-                        {
-                            nameList.add(Friend.tempFriendlist.get(a).getPlayerName());
-                            list.put(Friend.tempFriendlist.get(a).getPlayerName(),t.toArray()[i].toString());
-                        }
-                    }
+                if (tag.equals("large")) {
+                    SharedPreferences pref = getSharedPreferences("Friends", MODE_PRIVATE);
+                    ArrayList<String> nameList = new ArrayList<>();
+                    HashMap<String, String> list = new HashMap<>();
+                    Set<String> t = pref.getStringSet("Friends", null);
+                    for (int i = 0; i < t.size(); i++) {
 
-                }
-
-                Player p = new Player("player");
-                Stats s = Stats.newInstance(Friend.tempFriendlist.get(0).getSteamId());
-                FriendListFragment f = FriendListFragment.init(nameList,list);
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentManager fm2 = getSupportFragmentManager();
-                fm.beginTransaction().replace(R.id.flContent1, f).commit();
-                fm2.beginTransaction().replace(R.id.flContent2, s).commit();
-                Log.w("TEST", "onNavigationItemSelected: " );
-            }
-            else if (tag.equals("normal"))
-            {
-                SharedPreferences pref = getSharedPreferences("Friends",MODE_PRIVATE);
-                ArrayList<String> nameList = new ArrayList<>();
-                HashMap<String,String> list = new HashMap<>();
-                Set<String> t= pref.getStringSet("Friends",null);
-                for (int i=0;i<t.size();i++)
-                {
-
-                    for (int a=1;a<Friend.tempFriendlist.size();a++)
-                    {
-                        if (Friend.tempFriendlist.get(a).getSteamId().equals(t.toArray()[i].toString()))
-                        {
-                            nameList.add(Friend.tempFriendlist.get(a).getPlayerName());
-                            list.put(Friend.tempFriendlist.get(a).getPlayerName(),t.toArray()[i].toString());
-
+                        for (int a = 0; a < Friend.tempFriendlist.size(); a++) {
+                            if (Friend.tempFriendlist.get(a).getSteamId().toString().equals(t.toArray()[i].toString())) {
+                                nameList.add(Friend.tempFriendlist.get(a).getPlayerName());
+                                list.put(Friend.tempFriendlist.get(a).getPlayerName(), t.toArray()[i].toString());
+                            }
                         }
 
                     }
 
+                    Player p = new Player("player");
+                    Stats s = Stats.newInstance(Friend.tempFriendlist.get(0).getSteamId());
+                    FriendListFragment f = FriendListFragment.init(nameList, list);
+                    FragmentManager fm = getSupportFragmentManager();
+                    FragmentManager fm2 = getSupportFragmentManager();
+                    fm.beginTransaction().replace(R.id.flContent1, f).commit();
+                    fm2.beginTransaction().replace(R.id.flContent2, s).commit();
+                    Log.w("TEST", "onNavigationItemSelected: ");
+                } else if (tag.equals("normal")) {
+                    SharedPreferences pref = getSharedPreferences("Friends", MODE_PRIVATE);
+                    ArrayList<String> nameList = new ArrayList<>();
+                    HashMap<String, String> list = new HashMap<>();
+                    Set<String> t = pref.getStringSet("Friends", null);
+                    for (int i = 0; i < t.size(); i++) {
 
+                        for (int a = 1; a < Friend.tempFriendlist.size(); a++) {
+                            if (Friend.tempFriendlist.get(a).getSteamId().equals(t.toArray()[i].toString())) {
+                                nameList.add(Friend.tempFriendlist.get(a).getPlayerName());
+                                list.put(Friend.tempFriendlist.get(a).getPlayerName(), t.toArray()[i].toString());
+
+                            }
+
+                        }
+
+
+                    }
+
+                    FriendListFragment f2 = FriendListFragment.init(nameList, list);
+                    FragmentManager ft = getSupportFragmentManager();
+                    ft.beginTransaction().replace(R.id.flContent, f2).commit();
                 }
-
-                FriendListFragment f2 = FriendListFragment.init(nameList,list);
-                FragmentManager ft = getSupportFragmentManager();
-                ft.beginTransaction().replace(R.id.flContent, f2).commit();
+            }
+            else {
+                Snackbar noInternet = Snackbar.make(view, getResources().getString(R.string.no_internet), Snackbar.LENGTH_LONG);
+                noInternet.show();
             }
 
 
+            } else if (id == R.id.nav_live) {
+
+                Snackbar noInternet = Snackbar.make(view, getResources().getString(R.string.not_yet_implemented), Snackbar.LENGTH_LONG);
+                noInternet.show();
+            }
+
+             else if (id == R.id.nav_share) {
+
+                Log.w("TEST", "Drawer : Share");
+            } else if (id == R.id.nav_send) {
+                Log.w("TEST", "Drawer : Send");
+
+            } else {
+
+            }
+            try {
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //FragmentManager fragmentManager = getSupportFragmentManager();
+            //  fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+
+            // Highlight the selected item has been done by NavigationView
+            //  item.setChecked(true);
+            // Set action bar title
+            // setTitle(item.getTitle());
+            // Close the navigation drawer
 
 
-        } else if (id == R.id.nav_live) {
-            Log.w("TEST", "Drawer : Live");
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
 
-        } else if (id == R.id.nav_share) {
 
-            Log.w("TEST", "Drawer : Share");
-        } else if (id == R.id.nav_send) {
-            Log.w("TEST", "Drawer : Send");
-
-        } else {
+            return true;
 
         }
-        try {
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        //FragmentManager fragmentManager = getSupportFragmentManager();
-        //  fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-
-        // Highlight the selected item has been done by NavigationView
-        //  item.setChecked(true);
-        // Set action bar title
-        // setTitle(item.getTitle());
-        // Close the navigation drawer
-
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
 
     private void setupDrawerContent(NavigationView navigationView) {

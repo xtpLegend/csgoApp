@@ -20,6 +20,7 @@ import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IFillFormatter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -45,7 +46,8 @@ public class Stats extends Fragment {
     TextView txtPlayerName;
     TextView txtPlayerInfo;
     ImageView imageAvatar;
-
+    TextView txtFavWeapon;
+    TextView txtFavWeaponKills;
     private static String steamid;
 
 
@@ -90,9 +92,25 @@ public class Stats extends Fragment {
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_stats, container, false);//Inflate Layout
-        p=new Player("player");
-        if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Friend"))
-        f=(Friend) getObjectFromSteamId(steamid);
+        if (SplashActivity.networkStatus)
+        {
+            if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Friend"))
+            {
+                f=(Friend) getObjectFromSteamId(steamid);
+
+            }
+            else if(getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Player"))
+            {
+                p=(Player)getObjectFromSteamId(steamid);
+            }
+        }
+        else
+        {
+            p=Player.findById(Player.class,(long)1);
+        }
+
+
+
         txtTotalKills = (TextView) view.findViewById(R.id.txtTotalKills);
         txtTotalDeaths =(TextView) view.findViewById(R.id.txtTotalDeaths);
         txtAccuraty = (TextView) view.findViewById(R.id.txtAccuraty);
@@ -100,6 +118,10 @@ public class Stats extends Fragment {
         txtPlayerName = (TextView) view.findViewById(R.id.txtPlayerName);
         txtPlayerInfo= (TextView) view.findViewById(R.id.txtPlayerInfo);
         imageAvatar = (ImageView) view.findViewById(R.id.avatar);
+
+            txtFavWeapon = view.findViewById(R.id.FavoriteWeapon);
+            txtFavWeaponKills = view.findViewById(R.id.FavWeaponKills);
+
 
 
         pieChart = (PieChart) view.findViewById(R.id.PieChart);
@@ -119,24 +141,48 @@ public class Stats extends Fragment {
         //pieChart.setDrawEntryLabels(true);
         //pieChart.setEntryLabelTextSize(20);
         //More options just check out the documentation!
-        addDataSet(getObjectFromSteamId(steamid));
 
-        Log.w("TEST", getObjectFromSteamId(steamid).getClass().getSimpleName());
+
+
         //pieChart.animateX(1000);
-        if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Friend"))
+        if (SplashActivity.networkStatus)
         {
-            txtAccuraty.setText(Float.toString(f.getAccuracy()));
-            txtTotalDeaths.setText(Float.toString(f.getTotalDeaths()));
-            txtTotalKills.setText(Float.toString(f.getTotalKills()));
-            txtHeadshotPercentage.setText(Float.toString(f.getHeadshotPercentage()));
-            txtPlayerName.setText(f.getPlayerName());
-            txtPlayerInfo.setText(f.getRealname()+ " " + f.getNationality());
-            DownloadImageTask task = new DownloadImageTask(imageAvatar);
-            task.execute(f.getProfilePicture_large());
+            if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Friend"))
+            {
+                txtAccuraty.setText(Float.toString(f.getAccuracy()));
+                txtTotalDeaths.setText(Float.toString(f.getTotalDeaths()));
+                txtTotalKills.setText(Float.toString(f.getTotalKills()));
+                txtHeadshotPercentage.setText(Float.toString(f.getHeadshotPercentage()));
+                txtPlayerName.setText(f.getPlayerName());
+                txtPlayerInfo.setText(f.getRealname()+ " " + f.getNationality());
+                DownloadImageTask task = new DownloadImageTask(imageAvatar);
+                task.execute(f.getProfilePicture_large());
 
 
+
+
+
+
+
+            }
+            if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Player"))
+            {
+                txtAccuraty.setText(Float.toString(p.getAccuracy()));
+                txtTotalDeaths.setText(Integer.toString(p.getTotalDeaths()));
+                txtTotalKills.setText(Integer.toString(p.getTotalKills()));
+                txtHeadshotPercentage.setText(Float.toString(p.getHeadshotPercentage()));
+                txtPlayerName.setText(p.getPlayerName());
+                txtPlayerInfo.setText(p.getRealname()+ " " + p.getNationality());
+                DownloadImageTask task = new DownloadImageTask(imageAvatar);
+                task.execute(p.getProfilePicture_large());
+
+
+
+
+            }
+            addDataSet(getObjectFromSteamId(steamid));
         }
-        if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Player"))
+        else
         {
             txtAccuraty.setText(Float.toString(p.getAccuracy()));
             txtTotalDeaths.setText(Integer.toString(p.getTotalDeaths()));
@@ -146,8 +192,9 @@ public class Stats extends Fragment {
             txtPlayerInfo.setText(p.getRealname()+ " " + p.getNationality());
             DownloadImageTask task = new DownloadImageTask(imageAvatar);
             task.execute(p.getProfilePicture_large());
-
+            addDataSet(p);
         }
+
         pieChart.animateY(2000);
 
 

@@ -3,6 +3,8 @@
     <string name="choose_friends">Kies de vrieden die u wilt volgen</string>
 
     <string name="enter_steamid">Vul u steamid in :</string>
+    <string name="no_internet">Deze functie is niet beschikbaar als u offline bent</string>
+  <string name="not_yet_implemented">Deze functie is niet beschikbaar in de huidige build</string>
 
 
 </resources>

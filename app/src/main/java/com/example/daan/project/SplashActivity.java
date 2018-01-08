@@ -41,12 +41,11 @@ public class SplashActivity extends AppCompatActivity implements RequestFinished
                 if (isNetworkAvailable())
                 {
                     Player p2 = new Player(steamId, this);
-                    p2.save();
+
                 }
                 else
                 {
-                    Player p = Player.findById(Player.class, (long) 1);
-                    Log.w("TEST",Integer.toString(p.getTotalKills()));
+
                     Intent intentMain= new Intent(this, MainActivity.class);
                     startActivity(intentMain);
                     finish();
