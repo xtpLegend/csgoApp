@@ -1,14 +1,18 @@
 package com.example.daan.project;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.PieChart;
@@ -17,6 +21,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 
@@ -39,6 +44,7 @@ public class Stats extends Fragment {
     TextView txtHeadshotPercentage;
     TextView txtPlayerName;
     TextView txtPlayerInfo;
+    ImageView imageAvatar;
 
     private static String steamid;
 
@@ -93,6 +99,7 @@ public class Stats extends Fragment {
         txtHeadshotPercentage = (TextView) view.findViewById(R.id.txtHeadShotPercentage);
         txtPlayerName = (TextView) view.findViewById(R.id.txtPlayerName);
         txtPlayerInfo= (TextView) view.findViewById(R.id.txtPlayerInfo);
+        imageAvatar = (ImageView) view.findViewById(R.id.avatar);
 
 
         pieChart = (PieChart) view.findViewById(R.id.PieChart);
@@ -124,6 +131,10 @@ public class Stats extends Fragment {
             txtHeadshotPercentage.setText(Float.toString(f.getHeadshotPercentage()));
             txtPlayerName.setText(f.getPlayerName());
             txtPlayerInfo.setText(f.getRealname()+ " " + f.getNationality());
+            DownloadImageTask task = new DownloadImageTask(imageAvatar);
+            task.execute(f.getProfilePicture_large());
+
+
         }
         if (getObjectFromSteamId(steamid).getClass().getSimpleName().equals("Player"))
         {
@@ -133,6 +144,9 @@ public class Stats extends Fragment {
             txtHeadshotPercentage.setText(Float.toString(p.getHeadshotPercentage()));
             txtPlayerName.setText(p.getPlayerName());
             txtPlayerInfo.setText(p.getRealname()+ " " + p.getNationality());
+            DownloadImageTask task = new DownloadImageTask(imageAvatar);
+            task.execute(p.getProfilePicture_large());
+
         }
         pieChart.animateY(2000);
 
@@ -253,5 +267,29 @@ public class Stats extends Fragment {
         pieChart.setData(pieData);
         pieChart.invalidate();
 
+    }
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
     }
 }

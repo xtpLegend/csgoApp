@@ -93,9 +93,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
 
-        //  Log.w("TEST", mainPlayer.getProfilePicture_large() );
-        new DownloadImageTask((ImageView) findViewById(R.id.avatar))
-                .execute(mainPlayer.getProfilePicture_large());
 
 
         //Log.w("TEST", Integer.toString(mPlayer.getTotalKills()));
@@ -167,30 +164,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            //bmImage.setImageBitmap(result);
-        }
-    }
 
     @Override
     protected void onResume() {
